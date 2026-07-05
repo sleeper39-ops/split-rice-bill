@@ -179,13 +179,13 @@ body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);min-height:100
       <div class="friend-chips" id="friendChips"><span style="font-size:13px;color:var(--muted)">ยังไม่มีเพื่อน</span></div>
       <div class="add-row">
         <input id="newFriendName" type="text" placeholder="ชื่อเพื่อน (Enter หรือ +)" onkeydown="if(event.key==='Enter')addFriend()">
-        <button class="btn btn-green" onclick="addFriend()">＋</button>
+        <button class="btn btn-green" style="background:#DCEAFB;color:#1d528f" onmouseover="this.style.background='#C7DFFA'" onmouseout="this.style.background='#DCEAFB'" onclick="addFriend()">＋</button>
       </div>
       <div class="q-chips" id="quickChips"></div>
       <p style="font-size:11px;color:var(--muted);margin-top:6px">กดเพื่อเพิ่ม • กดค้างเพื่อลบทางลัด</p>
       <div class="add-row" style="margin-top:8px">
         <input id="newShortcutName" type="text" placeholder="เพิ่มชื่อทางลัด (Enter)" onkeydown="if(event.key==='Enter')addShortcut()">
-        <button class="btn btn-green" onclick="addShortcut()">＋ ทางลัด</button>
+        <button class="btn btn-green" style="background:#DCEAFB;color:#1d528f" onmouseover="this.style.background='#C7DFFA'" onmouseout="this.style.background='#DCEAFB'" onclick="addShortcut()">＋ ทางลัด</button>
       </div>
 
       <hr style="border:none;border-top:1px solid var(--border);margin:18px 0">
@@ -195,7 +195,7 @@ body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);min-height:100
       <div class="q-chips" id="groupChips"></div>
       <div class="add-row" style="margin-top:8px">
         <input id="newGroupName" type="text" placeholder="ตั้งชื่อแก๊ง เช่น แก๊งที่ทำงาน (Enter)" onkeydown="if(event.key==='Enter')saveCurrentAsGroup()">
-        <button class="btn btn-green" onclick="saveCurrentAsGroup()">💾 บันทึก</button>
+        <button class="btn btn-green" style="background:#DCEAFB;color:#1d528f" onmouseover="this.style.background='#C7DFFA'" onmouseout="this.style.background='#DCEAFB'" onclick="saveCurrentAsGroup()">💾 บันทึก</button>
       </div>
       <p style="font-size:11px;color:var(--muted);margin-top:6px">กดชื่อแก๊งเพื่อโหลดเพื่อนกลุ่มนั้นมาแทนรายชื่อปัจจุบัน • กด ✕ เพื่อลบแก๊ง (มีขั้นตอนยืนยันก่อนลบ)</p>
 
@@ -213,7 +213,7 @@ body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);min-height:100
         <div class="sec-title" style="margin:0">🍽️ บิลแต่ละร้าน</div>
       </div>
       <div class="sessions" id="sessionList"></div>
-      <button class="add-session-btn" onclick="addSession()" style="margin-top:10px;border-style:solid;border-color:#4A90D9;color:#2a6db5;background:#EAF3FC;" onmouseover="this.style.borderColor='#2a6db5';this.style.color='#1d528f';this.style.background='#DCEAFB'" onmouseout="this.style.borderColor='#4A90D9';this.style.color='#2a6db5';this.style.background='#EAF3FC'">＋ เพิ่มร้าน / บิล</button>
+      <button class="add-session-btn" onclick="addSession()" style="margin-top:10px;border-style:solid;border-color:#4CAF50;color:#2E7D32;background:#E3F5E4;" onmouseover="this.style.borderColor='#2E7D32';this.style.color='#1B5E20';this.style.background='#D1EED3'" onmouseout="this.style.borderColor='#4CAF50';this.style.color='#2E7D32';this.style.background='#E3F5E4'">＋ เพิ่มร้าน / บิล</button>
 
       <button class="btn btn-green btn-full" style="margin-top:20px" onclick="generate()">🧾 สร้างสรุปยอดและ QR Code</button>
     </div>
