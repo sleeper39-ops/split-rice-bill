@@ -407,6 +407,7 @@ function loadFromFirebaseThenSync(){
         sessions.forEach(sess=>{
           if(!sess.amounts){sess.amounts=[sess.amount||''];delete sess.amount;}
           if(!sess.foods)sess.foods=[];
+          if(!sess.who)sess.who=friends.map(f=>f.name);
         });
         sessionCounter=remote.sessionCounter||0;
         foodCounter=remote.foodCounter||0;
@@ -541,6 +542,7 @@ function loadState(){
           delete sess.amount;
         }
         if(!sess.foods)sess.foods=[];
+        if(!sess.who)sess.who=friends.map(f=>f.name);
       });
     }
     if(sc)shortcuts=JSON.parse(sc);
@@ -977,6 +979,7 @@ function toggleWho(sid,name){
 function renderWho(s){
   const el=document.getElementById('who-'+s.id);
   if(!el)return;
+  if(!s.who)s.who=[];
   if(!friends.length){el.innerHTML='<span style="font-size:12px;color:var(--muted)">เพิ่มเพื่อนก่อนนะ</span>';return;}
   el.innerHTML=friends.map(f=>{
     const on=s.who.includes(f.name);
