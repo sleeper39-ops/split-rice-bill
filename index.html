@@ -346,6 +346,9 @@ const firebaseConfig={
 let fbUid=null;
 let fbReady=false; // true เมื่อโหลดข้อมูลรอบแรกจาก Firebase เสร็จแล้ว (กันไม่ให้ push ทับข้อมูลเก่าก่อนโหลดเสร็จ)
 let _fbSyncTimer=null;
+// เวลาที่แก้ไขข้อมูลล่าสุดในเครื่องนี้ ใช้เทียบกับ updatedAt บน Firebase
+// เพื่อกันไม่ให้ข้อมูลเก่าจาก Firebase มาทับข้อมูลใหม่ที่ผู้ใช้เพิ่งกดระหว่างรอ sync (race condition)
+let localUpdatedAt=parseInt(localStorage.getItem('sb_updatedAt')||'0')||0;
 
 let fbAuth=null;
 let fbDb=null;
@@ -385,6 +388,15 @@ function loadFromFirebaseThenSync(){
   if(stateRef){
     stateRef.get().then(snap=>{
       const remote=snap.exists()?snap.val():null;
+      // ถ้าผู้ใช้เพิ่งแก้ไขข้อมูลในเครื่องนี้ (เช่น กดเพิ่มเพื่อน/เพิ่มร้าน) ระหว่างที่ระบบกำลัง
+      // เชื่อมต่อ Firebase อยู่ ให้ถือว่าของในเครื่องใหม่กว่า ไม่เอาข้อมูลเก่าจาก Firebase มาทับ
+      // แต่จะ push ข้อมูลปัจจุบันขึ้นไปแทน เพื่อให้ Firebase ตามทันของจริงในเครื่อง
+      const remoteUpdatedAt=(remote&&remote.updatedAt)?remote.updatedAt:0;
+      if(remote&&localUpdatedAt&&remoteUpdatedAt<localUpdatedAt){
+        fbReady=true;
+        pushStateToFirebase();
+        return;
+      }
       if(remote){
         friends=remote.friends||[];
         sessions=remote.sessions||[];
@@ -498,7 +510,9 @@ function pushLastClaimToFirebase(dateStr){
 }
 
 function saveState(){
+  localUpdatedAt=Date.now();
   try{
+    localStorage.setItem('sb_updatedAt',String(localUpdatedAt));
     localStorage.setItem('sb_friends',JSON.stringify(friends));
     localStorage.setItem('sb_sessions',JSON.stringify(sessions));
     localStorage.setItem('sb_shortcuts',JSON.stringify(shortcuts));
