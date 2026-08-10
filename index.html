@@ -1429,8 +1429,15 @@
           // migrate old sessions that use `amount` string to `amounts` array
           sessions.forEach(sess => {
             if (!sess.amounts) {
-              sess.amounts = [sess.amount || ''];
+              sess.amounts = [{ name: '', amount: sess.amount || '' }];
               delete sess.amount;
+            } else {
+              sess.amounts = sess.amounts.map(amt => {
+                if (typeof amt === 'string' || typeof amt === 'number') {
+                  return { name: '', amount: String(amt) };
+                }
+                return amt;
+              });
             }
             if (sess.vat === undefined) { sess.vat = ''; }
             if (!sess.foods) sess.foods = [];
@@ -1753,7 +1760,7 @@
     /* ---- SESSIONS ---- */
     function addSession() {
       const id = 's' + (++sessionCounter);
-      const s = { id, name: '', amounts: [''], who: [...friends.map(f => f.name)], foods: [], excludeFoods: [], vat: '' };
+      const s = { id, name: '', amounts: [{ name: '', amount: '' }], who: [...friends.map(f => f.name)], foods: [], excludeFoods: [], vat: '' };
       sessions.push(s);
       renderSessions();
       saveState();
@@ -1804,12 +1811,12 @@
         <div style="margin-top:12px">
           <div class="who-label" style="margin-bottom:6px">🍽️ บิลค่าอาหาร (จ่ายคนเดียว)</div>
           <div id="food-${s.id}" style="display:flex;flex-direction:column;gap:8px"></div>
-          <button class="add-session-btn" onclick="addFoodToSession('${s.id}')" style="margin-top:8px;padding:9px;font-size:13px;border-style:solid;border-color:#D4941A;color:#B8790A;background:#FFF3D6" onmouseover="this.style.borderColor='#B8790A';this.style.background='#FFECB8'" onmouseout="this.style.borderColor='#D4941A';this.style.background='#FFF3D6'">＋ เพิ่มบิลค่าอาหาร (จ่ายคนเดียว)</button>
+          <button class="add-session-btn" onclick="addFoodToSession('${s.id}')" style="margin-top:8px;padding:9px;font-size:13px;border-style:solid;border-color:#b3dff0;color:#0077cc;background:#f0f9ff" onmouseover="this.style.borderColor='#0077cc';this.style.background='#e0f2ff'" onmouseout="this.style.borderColor='#b3dff0';this.style.background='#f0f9ff'">＋ เพิ่มบิลค่าอาหาร (จ่ายคนเดียว)</button>
         </div>
         <div style="margin-top:12px">
           <div class="who-label" style="margin-bottom:6px">🚫 รายการแยก (คนนี้ไม่ต้องจ่าย)</div>
           <div id="exclude-${s.id}" style="display:flex;flex-direction:column;gap:8px"></div>
-          <button class="add-session-btn" onclick="addExcludeFoodToSession('${s.id}')" style="margin-top:8px;padding:9px;font-size:13px;border-style:solid;border-color:#b3dff0;color:#0077cc;background:#f0f9ff" onmouseover="this.style.borderColor='#0077cc';this.style.background='#e0f2ff'" onmouseout="this.style.borderColor='#b3dff0';this.style.background='#f0f9ff'">＋ เพิ่มบิลค่าอาหาร (คนนี้ไม่ต้องจ่าย)</button>
+          <button class="add-session-btn" onclick="addExcludeFoodToSession('${s.id}')" style="margin-top:8px;padding:9px;font-size:13px;border-style:solid;border-color:#ffccd5;color:#c91835;background:#fff5f6" onmouseover="this.style.borderColor='#c91835';this.style.background='#ffe5e9'" onmouseout="this.style.borderColor='#ffccd5';this.style.background='#fff5f6'">＋ เพิ่มบิลค่าอาหาร (คนนี้ไม่ต้องจ่าย)</button>
         </div>
       </div>`;
         el.appendChild(div);
@@ -1833,8 +1840,8 @@
     function addAmountToSession(sid) {
       const s = sessions.find(x => x.id === sid);
       if (!s) return;
-      if (!s.amounts) s.amounts = [''];
-      s.amounts.push('');
+      if (!s.amounts) s.amounts = [{ name: '', amount: '' }];
+      s.amounts.push({ name: '', amount: '' });
       renderAmountsInSession(s);
       saveState();
     }
@@ -1845,26 +1852,34 @@
       renderAmountsInSession(s);
       saveState();
     }
-    function updateAmountInSession(sid, idx, val) {
+    function updateAmountInSession(sid, idx, key, val) {
       const s = sessions.find(x => x.id === sid);
       if (!s) return;
-      if (!s.amounts) s.amounts = [''];
-      s.amounts[idx] = val;
+      if (!s.amounts) s.amounts = [{ name: '', amount: '' }];
+      if (!s.amounts[idx]) s.amounts[idx] = { name: '', amount: '' };
+      s.amounts[idx][key] = val;
       saveState();
     }
     function renderAmountsInSession(s) {
       const el = document.getElementById('amounts-' + s.id);
       if (!el) return;
-      if (!s.amounts) s.amounts = [''];
+      if (!s.amounts) s.amounts = [{ name: '', amount: '' }];
       el.innerHTML = '';
-      s.amounts.forEach((amt, idx) => {
+      s.amounts.forEach((item, idx) => {
+        const nameVal = item.name || '';
+        const amtVal = item.amount || '';
         const row = document.createElement('div');
         row.style.cssText = 'display:flex;align-items:center;gap:6px;';
-        row.innerHTML = `<input type="number" placeholder="ยอดบิล ฿" value="${amt}" inputmode="decimal"
-      style="flex:1;border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s"
-      oninput="updateAmountInSession('${s.id}',${idx},this.value)"
-      onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
-    ${s.amounts.length > 1 ? `<button onclick="removeAmountFromSession('${s.id}',${idx})" style="border:none;background:none;color:var(--danger);font-size:18px;cursor:pointer;padding:2px 4px;flex-shrink:0;line-height:1">✕</button>` : ''}`;
+        row.innerHTML = `
+      <input type="text" placeholder="รายการ / โน้ต" value="${nameVal}"
+        style="flex:1;border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s"
+        oninput="updateAmountInSession('${s.id}',${idx},'name',this.value)"
+        onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
+      <input type="number" placeholder="ยอดเงิน ฿" value="${amtVal}" inputmode="decimal"
+        style="max-width:110px;border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s"
+        oninput="updateAmountInSession('${s.id}',${idx},'amount',this.value)"
+        onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
+      ${s.amounts.length > 1 ? `<button onclick="removeAmountFromSession('${s.id}',${idx})" style="border:none;background:none;color:var(--danger);font-size:18px;cursor:pointer;padding:2px 4px;flex-shrink:0;line-height:1">✕</button>` : ''}`;
         el.appendChild(row);
       });
     }
@@ -1942,8 +1957,8 @@
         </span>`
           : `<button class="btn btn-red" style="padding:6px 14px;font-size:12px;margin-left:auto" onclick="askRemoveFood('${f.id}')">ลบ</button>`;
         div.innerHTML = `
-      <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#FFF8E6">
-        <span style="font-size:12px;font-weight:700;color:#B8790A">🍽️ อาหาร ${i + 1}</span>
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#e0f2ff">
+        <span style="font-size:12px;font-weight:700;color:#0077cc">🍽️ อาหาร ${i + 1}</span>
         ${delBtn}
       </div>
       <div style="padding:10px 12px;display:flex;flex-direction:column;gap:8px">
@@ -1951,7 +1966,7 @@
           <input type="text" placeholder="รายการ / โน้ต" value="${f.name}" oninput="updateFoodInSession('${s.id}','${f.id}','name',this.value)" style="flex:1;border:1.5px solid #b3dff0;border-radius:10px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none">
           <input type="number" placeholder="ยอด ฿" value="${f.amount}" inputmode="decimal" oninput="updateFoodInSession('${s.id}','${f.id}','amount',this.value)" style="max-width:110px;border:1.5px solid #b3dff0;border-radius:10px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none">
         </div>
-        <select onchange="updateFoodInSession('${s.id}','${f.id}','payer',this.value)" style="width:100%;border:1.5px solid #D4941A;border-radius:10px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;background:#fff">
+        <select onchange="updateFoodInSession('${s.id}','${f.id}','payer',this.value)" style="width:100%;border:1.5px solid #b3dff0;border-radius:10px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;background:#fff">
           <option value="">-- ใครจ่าย? --</option>
           ${payerOpts}
         </select>
@@ -2040,7 +2055,7 @@
       if (!friends.length) { showToast('เพิ่มเพื่อนก่อนนะ!'); return; }
       if (!sessions.length) { showToast('เพิ่มบิลอย่างน้อย 1 ร้านก่อน!'); return; }
       const badSession = sessions.find(s => {
-        const total = (s.amounts || [s.amount || '']).reduce((sum, a) => sum + (parseFloat(a) || 0), 0);
+        const total = (s.amounts || [{ name: '', amount: '' }]).reduce((sum, a) => sum + (parseFloat(a.amount || a) || 0), 0);
         return !(total > 0);
       });
       if (badSession) { showToast('กรอกยอดบิลให้ครบทุกร้านก่อนนะ 🍚'); return; }
@@ -2052,16 +2067,61 @@
       friends.forEach(f => totals[f.name] = { total: 0, breakdown: [] });
 
       sessions.forEach(s => {
-        const bill = (s.amounts || [s.amount || '']).reduce((sum, a) => sum + (parseFloat(a) || 0), 0);
+        const bill = (s.amounts || []).reduce((sum, a) => sum + (parseFloat(a.amount || a) || 0), 0);
+        let excludeTotal = 0;
+        (s.excludeFoods || []).forEach(ex => {
+          const amt = parseFloat(ex.amount) || 0;
+          if (amt > 0 && ex.excludePayer) excludeTotal += amt;
+        });
+        const sharedBase = Math.max(0, bill - excludeTotal);
+
         const vatRate = parseFloat(s.vat) || 0;
-        const billWithVat = bill * (1 + vatRate / 100);
+        const baseWithVat = sharedBase * (1 + vatRate / 100);
         const ppl = s.who.filter(w => friends.find(f => f.name === w));
         if (!ppl.length) return;
-        const share = Math.ceil(billWithVat / ppl.length);
+        const share = Math.ceil(baseWithVat / ppl.length);
+
+        const notes = (s.amounts || []).map(a => a.name).filter(Boolean).join(', ');
+        const shopLabel = (s.name || 'ร้าน') + (notes ? ` (${notes})` : '');
+
         ppl.forEach(name => {
           if (totals[name]) {
             totals[name].total += share;
-            totals[name].breakdown.push({ label: s.name || 'ร้าน', amount: share, bill: bill, pax: ppl.length, vat: vatRate });
+            totals[name].breakdown.push({ label: shopLabel, amount: share, bill: sharedBase, pax: ppl.length, vat: vatRate });
+          }
+        });
+
+        // Split excluded items among those who participate (everyone except excludePayer)
+        (s.excludeFoods || []).forEach(ex => {
+          const amt = parseFloat(ex.amount) || 0;
+          if (amt <= 0 || !ex.excludePayer) return;
+          const exPpl = ppl.filter(w => w !== ex.excludePayer);
+          if (exPpl.length === 0) return;
+
+          const exWithVat = amt * (1 + vatRate / 100);
+          const exShare = Math.ceil(exWithVat / exPpl.length);
+          exPpl.forEach(name => {
+            if (totals[name]) {
+              totals[name].total += exShare;
+              totals[name].breakdown.push({
+                label: `${ex.name || 'รายการแยก'} (คนอื่นหาร)`,
+                amount: exShare,
+                bill: amt,
+                pax: exPpl.length,
+                vat: vatRate,
+                food: true
+              });
+            }
+          });
+          if (ppl.includes(ex.excludePayer) && totals[ex.excludePayer]) {
+            totals[ex.excludePayer].breakdown.push({
+              label: `${ex.name || 'รายการแยก'} (ไม่จ่าย)`,
+              amount: 0,
+              bill: amt,
+              pax: exPpl.length,
+              vat: vatRate,
+              food: true
+            });
           }
         });
       });
@@ -2080,7 +2140,7 @@
 
       const grandTotal = friends.reduce((sum, f) => sum + totals[f.name].total, 0);
       const totalBill = sessions.reduce((sum, s) => {
-        const bill = (s.amounts || [s.amount || '']).reduce((a, x) => a + (parseFloat(x) || 0), 0);
+        const bill = (s.amounts || []).reduce((a, x) => a + (parseFloat(x.amount || x) || 0), 0);
         const vatRate = parseFloat(s.vat) || 0;
         return sum + bill * (1 + vatRate / 100);
       }, 0);
@@ -2360,7 +2420,7 @@
       let foodTotalWithVat = 0;
       const lines = ['🍚 สรุปค่าอาหารมื้อนี้', '━━━━━━━━━━━━━━━━'];
       sess.forEach((s, i) => {
-        const bill = (s.amounts || [s.amount || '']).reduce((a, x) => a + (parseFloat(x) || 0), 0);
+        const bill = (s.amounts || []).reduce((a, x) => a + (parseFloat(x.amount || x) || 0), 0);
         let excludeTotal = 0;
         (s.excludeFoods || []).forEach(ex => { const amt = parseFloat(ex.amount) || 0; if (amt > 0 && ex.excludePayer) excludeTotal += amt; });
         const sharedBase = Math.max(0, bill - excludeTotal);
@@ -2372,7 +2432,9 @@
         const ppl = s.who ? s.who.filter(w => friends.find(f => f.name === w)) : [];
         const pax = ppl.length;
         const perHead = pax > 0 ? Math.ceil(baseWithVat / pax) : 0;
-        const label = s.name || 'ร้านที่ ' + (i + 1);
+        
+        const notes = (s.amounts || []).map(a => a.name).filter(Boolean).join(', ');
+        const label = (s.name || 'ร้านที่ ' + (i + 1)) + (notes ? ` (${notes})` : '');
 
         if (vatRate > 0) {
           lines.push(`📍 ${label}: ฿${sharedBase.toLocaleString()} + VAT ${vatRate}% (฿${Math.ceil(baseWithVat).toLocaleString()}) ÷ ${pax} คน = คนละ ฿${perHead.toLocaleString()}`);
