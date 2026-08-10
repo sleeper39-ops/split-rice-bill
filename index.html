@@ -1296,8 +1296,19 @@
             groups = remote.groups || [];
             tripHistory = remote.tripHistory || [];
             sessions.forEach(sess => {
-              if (!sess.amounts) { sess.amounts = [sess.amount || '']; delete sess.amount; }
+              if (!sess.amounts) {
+                sess.amounts = [{ name: '', amount: sess.amount || '' }];
+                delete sess.amount;
+              } else {
+                sess.amounts = sess.amounts.map(amt => {
+                  if (typeof amt === 'string' || typeof amt === 'number') {
+                    return { name: '', amount: String(amt) };
+                  }
+                  return amt;
+                });
+              }
               if (!sess.foods) sess.foods = [];
+              if (!sess.excludeFoods) sess.excludeFoods = [];
               if (!sess.who) sess.who = friends.map(f => f.name);
             });
             sessionCounter = remote.sessionCounter || 0;
@@ -1841,6 +1852,12 @@
       const s = sessions.find(x => x.id === sid);
       if (!s) return;
       if (!s.amounts) s.amounts = [{ name: '', amount: '' }];
+      s.amounts = s.amounts.map(amt => {
+        if (typeof amt === 'string' || typeof amt === 'number') {
+          return { name: '', amount: String(amt) };
+        }
+        return amt;
+      });
       s.amounts.push({ name: '', amount: '' });
       renderAmountsInSession(s);
       saveState();
@@ -1856,6 +1873,9 @@
       const s = sessions.find(x => x.id === sid);
       if (!s) return;
       if (!s.amounts) s.amounts = [{ name: '', amount: '' }];
+      if (typeof s.amounts[idx] === 'string' || typeof s.amounts[idx] === 'number') {
+        s.amounts[idx] = { name: '', amount: String(s.amounts[idx]) };
+      }
       if (!s.amounts[idx]) s.amounts[idx] = { name: '', amount: '' };
       s.amounts[idx][key] = val;
       saveState();
