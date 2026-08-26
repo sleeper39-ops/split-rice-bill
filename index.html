@@ -1668,6 +1668,19 @@
     let paidStatus = {}; // { [friendName]: true } สถานะจ่ายแล้วของบิลปัจจุบัน (รีเซ็ตทุกครั้งที่กดสร้างสรุปยอดใหม่)
     let groups = []; // [{id,name,members:[friendName,...]}] "แก๊ง" เพื่อนที่บันทึกไว้ใช้ซ้ำ
     let tripHistory = []; // [{id,date,friends:[name],sessionNames:[name],totalBill,grandTotal}] ประวัติทริปที่เคยสร้างสรุปยอด (เก็บล่าสุด 30 ครั้ง)
+    let _resultCache = null;
+    let _resultDate = null;
+
+    function formatThaiDateTime(dateInput) {
+      const d = dateInput instanceof Date ? dateInput : (dateInput ? new Date(dateInput) : new Date());
+      const validDate = isNaN(d.getTime()) ? new Date() : d;
+      const day = validDate.getDate();
+      const month = validDate.getMonth() + 1;
+      const yearBE = (validDate.getFullYear() + 543) % 100; // e.g. 2569 -> 69
+      const hours = String(validDate.getHours()).padStart(2, '0');
+      const minutes = String(validDate.getMinutes()).padStart(2, '0');
+      return `${day}-${month}-${yearBE} ${hours}:${minutes}`;
+    }
 
     function initial(n) { return n.charAt(0).toUpperCase(); }
 
@@ -2757,7 +2770,7 @@
     function renderFoodBills() { }
 
     /* ---- GENERATE ---- */
-    function generate(addToHistory = true, switchTabToResult = true, showSuccessToast = true) {
+    function generate(addToHistory = true, switchTabToResult = true, showSuccessToast = true, targetDate = null) {
       if (!friends.length) { showToast('เพิ่มเพื่อนก่อนนะ!'); return false; }
       if (!sessions.length) { showToast('เพิ่มบิลอย่างน้อย 1 ร้านก่อน!'); return false; }
       const badSession = sessions.find(s => {
@@ -2767,6 +2780,10 @@
       if (badSession) { showToast('กรอกยอดบิลให้ครบทุกร้านก่อนนะ'); return false; }
 
       const ppNum = (document.getElementById('ppNum') ? document.getElementById('ppNum').value : '').trim();
+
+      // บันทึก/อัปเดตวันและเวลาของสรุปยอด
+      _resultDate = targetDate ? new Date(targetDate) : new Date();
+      if (isNaN(_resultDate.getTime())) _resultDate = new Date();
 
       // calc per-person totals
       const totals = {};
@@ -2857,7 +2874,7 @@
         // เก็บลงประวัติทริป (เก็บล่าสุด 30 ครั้ง) พร้อมข้อมูลครบถ้วนทั้งรายชื่อและการเงิน
         tripHistory.unshift({
           id: 't' + Date.now(),
-          date: new Date().toISOString(),
+          date: _resultDate.toISOString(),
           friends: friends.map(f => f.name),
           friendsData: JSON.parse(JSON.stringify(friends)),
           sessions: JSON.parse(JSON.stringify(sessions)),
@@ -2879,11 +2896,15 @@
         // summary banner
         const vatRates = [...new Set(sessions.map(s => parseFloat(s.vat) || 0).filter(v => v > 0))];
         const vatText = vatRates.length > 0 ? ` (รวม VAT ${vatRates.map(v => v + '%').join(', ')})` : '';
+        const dtText = formatThaiDateTime(_resultDate);
 
         const banner = document.createElement('div');
         banner.className = 'summary-banner';
         banner.innerHTML = `
-      <div class="sb-label">ยอดรวมทั้งหมด (${sessions.length} ร้าน)${vatText}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;flex-wrap:wrap">
+        <div class="sb-label" style="margin:0">ยอดรวมทั้งหมด (${sessions.length} ร้าน)${vatText}</div>
+        <div style="font-size:12px;font-weight:700;background:rgba(255,255,255,0.18);padding:3px 10px;border-radius:12px;color:#FAF6ED;border:1px solid rgba(212,163,75,0.4);display:inline-flex;align-items:center;gap:4px">📅 ${dtText}</div>
+      </div>
       <div class="sb-val">฿${totalBill.toLocaleString()}</div>
       <div class="sb-sub">👥 ${friends.length} คน • เก็บรวม ฿${grandTotal.toLocaleString()}</div>`;
         out.appendChild(banner);
@@ -3009,8 +3030,7 @@
         return;
       }
       el.innerHTML = tripHistory.map(t => {
-        const d = new Date(t.date);
-        const dateStr = isNaN(d) ? '' : d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' }) + ' ' + d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+        const dateStr = formatThaiDateTime(t.date);
         
         const shopNamesList = (t.sessionNames && t.sessionNames.length) ? t.sessionNames.join(', ') : (t.sessions ? t.sessions.map(s => s.name || 'ร้าน').join(', ') : '');
         const shopInfo = shopNamesList ? ` • 🍽️ ${shopNamesList}` : '';
@@ -3131,8 +3151,8 @@
       renderSessions();
       saveState();
 
-      // 6. คำนวณและแสดงผลหน้าสรุปยอดทันที (พร้อมสลับแท็บไปที่ 'result')
-      const ok = generate(false, true, false);
+      // 6. คำนวณและแสดงผลหน้าสรุปยอดทันที (พร้อมสลับแท็บไปที่ 'result' และใช้วันเวลาเดิมของทริปนั้น)
+      const ok = generate(false, true, false, t.date);
       if (ok) {
         showToast('โหลดข้อมูลทริปและสรุปยอดเรียบร้อย! 📊');
       } else {
@@ -3235,10 +3255,12 @@
     ];
 
     function buildPersonMsg(name, total, breakdown, pp) {
+      const dtStr = formatThaiDateTime(_resultDate || new Date());
       const header = MSG_HEADERS[Math.floor(Math.random() * MSG_HEADERS.length)];
       const ending = MSG_ENDINGS[Math.floor(Math.random() * MSG_ENDINGS.length)];
       const lines = [];
       lines.push(header);
+      lines.push(`📅 วันที่: ${dtStr}`);
       lines.push(`👤 ถึงคุณ: ${name}`);
       lines.push('━━━━━━━━━━━━━━━━');
       if (breakdown && breakdown.length > 0) {
@@ -3287,14 +3309,18 @@
       const txt = buildPersonMsg(name, total, info ? info.breakdown : null, pp);
       window.open('https://line.me/R/msg/text/?' + encodeURIComponent(txt), '_blank');
     }
-    let _resultCache = null;
     function copyAll(totals, sess, pp) {
       if (!spendToken('คัดลอกสรุปรวมส่ง LINE')) return;
       let totalBillWithVat = 0;
       let foodTotalWithVat = 0;
+      const dtStr = formatThaiDateTime(_resultDate || new Date());
       const header = MSG_HEADERS[Math.floor(Math.random() * MSG_HEADERS.length)];
       const ending = MSG_ENDINGS[Math.floor(Math.random() * MSG_ENDINGS.length)];
-      const lines = [header, '━━━━━━━━━━━━━━━━'];
+      const lines = [
+        header,
+        `📅 วันที่: ${dtStr}`,
+        '━━━━━━━━━━━━━━━━'
+      ];
       sess.forEach((s, i) => {
         const bill = (s.amounts || []).reduce((a, x) => a + (parseFloat(x.amount || x) || 0), 0);
         let excludeTotal = 0;
@@ -3385,10 +3411,12 @@
     }
 
     function buildReminderMsg(name, total, breakdown, pp) {
+      const dtStr = formatThaiDateTime(_resultDate || new Date());
       const ending = MSG_ENDINGS[Math.floor(Math.random() * MSG_ENDINGS.length)];
       const lines = [];
       lines.push(`🔔 ทวงเงินด่วน! ${name} ยังไม่ได้โอนเลยนะ`);
-      lines.push('');
+      lines.push(`📅 วันที่: ${dtStr}`);
+      lines.push('━━━━━━━━━━━━━━━━');
       if (breakdown && breakdown.length) {
         breakdown.forEach(b => {
           const vatRate = b.vat || 0;
@@ -3612,9 +3640,9 @@
       ctx.fillText(titleText, titleStartX + (logoImg ? logoSize + logoGap : 0), 140);
       ctx.textAlign = 'center';
       ctx.font = "400 32px 'Noto Sans Thai',sans-serif";
-      ctx.globalAlpha = .85;
-      const dateStr = new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
-      ctx.fillText('สรุปยอดวันที่ ' + dateStr, W / 2, 195);
+      ctx.globalAlpha = .9;
+      const dtCanvasStr = formatThaiDateTime(_resultDate || new Date());
+      ctx.fillText('สรุปยอดวันที่ ' + dtCanvasStr, W / 2, 195);
       ctx.globalAlpha = 1;
 
       // total banner
@@ -3777,7 +3805,7 @@
       }
       ctx.fillStyle = '#999';
       ctx.font = "400 24px 'Noto Sans Thai',sans-serif";
-      ctx.fillText('สร้างด้วย หารค่าข้าว • ' + new Date().toLocaleString('th-TH', { hour: '2-digit', minute: '2-digit' }), W / 2, fy);
+      ctx.fillText('สร้างด้วย หารค่าข้าว • ' + dtCanvasStr, W / 2, fy);
 
       return canvas;
     }
