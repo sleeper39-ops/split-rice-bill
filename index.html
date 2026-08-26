@@ -1691,7 +1691,7 @@
         return;
       }
 
-      showToast('📷 กำลังส่งภาพให้ AI (Gemini 1.5 Flash) อ่านใบเสร็จ...');
+      showToast('📷 กำลังส่งภาพให้ AI สแกนอ่านใบเสร็จ...');
 
       try {
         const base64Data = await readFileAsBase64(file);
@@ -1719,18 +1719,27 @@
     }
 
     async function callGeminiVisionApi(base64Data, mimeType, apiKey) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const candidateEndpoints = [
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent',
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent',
+        'https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent',
+        'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent',
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent'
+      ];
 
       const promptText = `คุณคือผู้เชี่ยวชาญด้านการอ่านใบเสร็จรับเงิน/บิลค่าอาหาร กรุณาอ่านข้อมูลจากรูปภาพใบเสร็จนี้แล้วตอบกลับเฉพาะโครงสร้าง JSON ที่ถูกต้องเท่านั้น ห้ามมีข้อความเกริ่นหรือเครื่องหมาย markdown นอก JSON 
 โครงสร้าง JSON:
 {
   "shopName": "ชื่อร้านอาหาร (ถ้าอ่านได้)",
-  "vatPercent": 0, (เปอร์เซ็นต์ VAT เช่น 7 หรือ 0 ถ้าไม่มี)
-  "totalAmount": 0, (ราคาสุทธิรวมทั้งหมด เป็นตัวเลข)
+  "vatPercent": 0,
+  "totalAmount": 0,
   "items": [
     {
       "name": "ชื่อรายการอาหาร",
-      "amount": 0 (ราคาเป็นตัวเลข)
+      "amount": 0
     }
   ]
 }`;
@@ -1755,30 +1764,70 @@
         }
       };
 
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      let lastError = null;
 
-      if (!response.ok) {
-        const errJson = await response.json().catch(() => ({}));
-        const errMsg = errJson.error?.message || response.statusText;
-        if (response.status === 400 && errMsg.includes('API_KEY_INVALID')) {
-          throw new Error('API Key ไม่ถูกต้อง กรุณาตรวจสอบ Key ในการตั้งค่า');
+      for (let i = 0; i < candidateEndpoints.length; i++) {
+        const endpoint = candidateEndpoints[i];
+        const url = `${endpoint}?key=${apiKey}`;
+
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            const errJson = await response.json().catch(() => ({}));
+            const errMsg = errJson.error?.message || response.statusText;
+
+            if (response.status === 400 && errMsg.includes('API_KEY_INVALID')) {
+              throw new Error('API Key ไม่ถูกต้อง กรุณาตรวจสอบ Key ในการตั้งค่า (ขอรับฟรีได้ที่ aistudio.google.com)');
+            }
+            if (response.status === 403) {
+              lastError = new Error(`API Key ไม่มีสิทธิ์เข้าถึง หรือ Generative Language API ยังไม่ถูกเปิดใช้งาน (${errMsg})`);
+              continue;
+            }
+            if (response.status === 429) {
+              throw new Error('โควตา Gemini API ฟรีเต็มชั่วคราว (Rate limit) กรุณารอสักครู่แล้วลองใหม่');
+            }
+            if (response.status === 404) {
+              lastError = new Error(`Gemini API error (404): ${errMsg}`);
+              continue;
+            }
+
+            lastError = new Error(`Gemini API error (${response.status}): ${errMsg}`);
+            continue;
+          }
+
+          const resData = await response.json();
+          const rawText = resData.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (!rawText) {
+            lastError = new Error('AI ไม่ได้ส่งข้อมูลตอบกลับ');
+            continue;
+          }
+
+          // extract and clean JSON
+          let cleanText = rawText.trim();
+          if (cleanText.startsWith('```')) {
+            cleanText = cleanText.replace(/^```[a-z]*\s*/i, '').replace(/```\s*$/, '').trim();
+          }
+          const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
+          if (!jsonMatch) {
+            lastError = new Error('รูปแบบข้อมูลจาก AI ไม่ถูกต้อง');
+            continue;
+          }
+
+          return JSON.parse(jsonMatch[0]);
+        } catch (fetchErr) {
+          if (fetchErr.message && (fetchErr.message.includes('API Key ไม่ถูกต้อง') || fetchErr.message.includes('โควตา'))) {
+            throw fetchErr;
+          }
+          lastError = fetchErr;
         }
-        throw new Error(`Gemini API error (${response.status}): ${errMsg}`);
       }
 
-      const resData = await response.json();
-      const rawText = resData.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!rawText) throw new Error('AI ไม่ได้ส่งข้อมูลตอบกลับ');
-
-      // extract JSON
-      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error('รูปแบบข้อมูลจาก AI ไม่ถูกต้อง');
-
-      return JSON.parse(jsonMatch[0]);
+      throw lastError || new Error('ไม่สามารถเชื่อมต่อโมเดล Gemini API ได้ กรุณาตรวจสอบ API Key หรือลองใหม่อีกครั้ง');
     }
 
     function applyReceiptDataToSession(data, sessionId) {
