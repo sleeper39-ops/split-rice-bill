@@ -417,6 +417,7 @@
     }
 
     .session-head {
+      position: relative;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -1045,8 +1046,12 @@
         <hr style="border:none;border-top:1px solid var(--border);margin:18px 0">
 
         <!-- Sessions -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-          <div class="sec-title" style="margin:0">🍽️ บิลแต่ละร้าน</div>
+        <div style="position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:6px;min-height:28px">
+          <div class="sec-title" style="position:absolute;left:0;margin:0">🍽️ บิลแต่ละร้าน</div>
+          <button class="btn btn-outline" style="flex:none;width:auto;max-width:max-content;padding:3px 8px;font-size:11px;background:#FAF6ED;color:#143527;border-color:#D4A34B;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;line-height:1.2;border-radius:8px;" onclick="triggerScanReceipt(null)" title="ถ่ายรูปใบเสร็จเพื่อสร้างร้านใหม่พร้อมรายการอาหารอัตโนมัติ">📷 สแกนใบเสร็จ AI</button>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin:0 0 10px">
+          💡 <b>สแกนใบเสร็จ AI:</b> ถ่ายรูปใบเสร็จเพื่อสร้างร้านใหม่และดึงรายการอาหารอัตโนมัติ
         </div>
         <div class="sessions" id="sessionList"></div>
         <button class="add-session-btn" onclick="addSession()"
@@ -1170,6 +1175,26 @@
           การตั้งบิล เพิ่มเพื่อน กดจ่ายแล้ว/ยังไม่จ่าย และดูสรุปยอด ไม่ใช้ Token</p>
 
         <div class="sec-title" style="margin-top:18px">❓ คำถามที่พบบ่อย</div>
+                <div class="faq-item">
+          <div class="faq-q">ปุ่มสแกนใบเสร็จ AI ทั้ง 2 ปุ่ม แตกต่างกันอย่างไรและใช้งานยังไง?</div>
+          <div class="faq-a">
+            ในหน้าหารบิลจะมีปุ่มสแกนใบเสร็จด้วย AI (Google Gemini 1.5 Flash) ให้เลือกใช้งาน 2 รูปแบบตามความสะดวก:<br>
+            • <b>1. ปุ่ม "📷 สแกนใบเสร็จ AI" (ด้านบนหัวข้อบิลแต่ละร้าน):</b> ใช้สำหรับสแกนใบเสร็จเพื่อ <u>สร้างร้านใหม่</u> พร้อมอ่านชื่อร้าน รายการอาหาร และราคาลงในร้านใหม่ให้อัตโนมัติทันที<br>
+            • <b>2. ปุ่ม "📷 AI สแกน" (ที่หัวการ์ดร้านแต่ละร้าน):</b> ใช้สำหรับสแกนใบเสร็จเพื่อ <u>นำรายการอาหารและราคาเข้าบิลร้านนั้นๆ โดยตรง</u> เหมาะสำหรับกรณีสร้างร้านไว้แล้วต้องการถ่ายใบเสร็จเติมเข้าไป<br><br>
+            <b>วิธีเปิดใช้งานฟรี 100% (วันละ 1,500 รูป):</b><br>
+            1. สมัครขอรับ Gemini API Key ฟรีที่ <a href="https://aistudio.google.com/" target="_blank" rel="noopener" style="color:var(--green);font-weight:700;text-decoration:underline;">Google AI Studio</a><br>
+            2. นำรหัส Key มากรอกในช่อง "ตั้งค่า Gemini API Key" ด้านบน แล้วกดบันทึก<br>
+            3. กดปุ่มสแกน AI จุดใดก็ได้ แล้วถ่ายรูปหรือเลือกภาพใบเสร็จเพื่อเริ่มใช้งานได้ทันที
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">Gemini API Key ปลอดภัยไหม ข้อมูลรั่วไหลหรือไม่?</div>
+          <div class="faq-a">
+            ปลอดภัย 100% ครับ รหัส API Key ของคุณจะถูกบันทึกไว้ในเครื่องของคุณเองเท่านั้น (localStorage) ไม่มีการส่งไปเก็บไว้ที่เซิร์ฟเวอร์ใดๆ และรูปภาพใบเสร็จจะถูกส่งตรงไปยัง Google Gemini ผ่านการเข้ารหัส HTTPS ที่ปลอดภัย
+          </div>
+        </div>
+
         <div class="faq-item">
           <div class="faq-q">Token หมดแล้วทำยังไง?</div>
           <div class="faq-a">แตะไอคอน Token มุมขวาบน หรือแท็บ "เติม Token" ด้านล่าง เพื่อรับฟรีประจำวันหรือเลือกแพ็กเกจเติม
@@ -1217,7 +1242,7 @@
         </div>
 
         <div class="sec-title" style="margin-top:18px">เวอร์ชันและการอัปเดต</div>
-        <p style="font-size:12px;color:var(--muted)">หารค่าข้าว v2.3 • เพิ่มฟังก์ชัน VAT % (แก้ไขค่าได้, แสดงผลข้างจำนวนเงิน, ไม่คิดเมื่อเว้นว่าง) • ปุ่มบิลค่าอาหาร (คนนี้ไม่ต้องจ่าย) • ระบบ Token (โหมดจำลอง) • ประวัติทริป + แก๊งเพื่อน</p>
+        <p style="font-size:12px;color:var(--muted)">หารค่าข้าว v2.4 • สแกนใบเสร็จด้วย AI (Gemini 1.5 Flash) • แยกแท็บจัดการชื่อทางลัด & แก๊งเพื่อน • เพิ่มฟังก์ชัน VAT % (แก้ไขค่าได้, แสดงผลข้างจำนวนเงิน, ไม่คิดเมื่อเว้นว่าง) • ปุ่มบิลค่าอาหาร (คนนี้ไม่ต้องจ่าย) • ระบบ Token (โหมดจำลอง) • ประวัติทริป + แก๊งเพื่อน</p>
       </div>
     </div>
 
@@ -1252,6 +1277,45 @@
         class="nav-icon">ℹ️</span><span>รายละเอียด</span></button>
     <button class="nav-item" data-tab="coffee" onclick="switchTab('coffee')"><span
         class="nav-icon">☕</span><span>เลี้ยงกาแฟ</span></button>
+  </div>
+
+  
+  <!-- Hidden File Input for Camera/Gallery Receipt Scan -->
+  <input id="receiptFileInput" type="file" accept="image/*" style="display:none" onchange="handleReceiptImageSelected(event)">
+
+  <!-- Modal สำหรับตั้งค่า Gemini API Key -->
+  <div class="modal-overlay" id="geminiKeyModal" style="display:none">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div style="font-size:16px;font-weight:700;color:var(--text)">🔑 ตั้งค่า Gemini API Key (สแกนใบเสร็จฟรี)</div>
+        <button class="modal-close" onclick="closeGeminiKeyModal()">✕</button>
+      </div>
+      <p style="font-size:13px;line-height:1.6;color:var(--text);margin-bottom:12px">
+        กรอก Gemini API Key เพื่อเปิดใช้งานฟีเจอร์สแกนใบเสร็จด้วย AI (ใช้งานฟรีสูงสุด 1,500 รูป/วัน รหัสจะถูกบันทึกไว้อย่างปลอดภัยในเครื่องของคุณเอง)
+      </p>
+
+      <div class="sec-title" style="margin-top:10px">API Key ของคุณ:</div>
+      <div class="add-row">
+        <input id="geminiApiKeyModalInput" type="password" placeholder="วาง API Key (เช่น AIzaSy...)" style="font-family:monospace;font-size:13px;">
+        <button class="btn btn-green" onclick="saveGeminiApiKeyFromModal()">💾 บันทึก</button>
+      </div>
+      <p id="geminiKeyStatusText" style="font-size:12px;margin-top:6px;font-weight:600;color:var(--muted)"></p>
+
+      <div style="margin-top:14px;background:#FFF9EF;border:1px solid var(--amber);border-radius:12px;padding:12px;">
+        <div style="font-size:13px;font-weight:700;color:#684206;margin-bottom:4px">💡 วิธีรับ API Key ฟรีใน 1 นาที:</div>
+        <ol style="font-size:12px;line-height:1.6;color:#684206;padding-left:18px;margin:0;">
+          <li>กดไปที่ <a href="https://aistudio.google.com/" target="_blank" rel="noopener" style="color:var(--green);font-weight:700;text-decoration:underline;">Google AI Studio (คลิก)</a></li>
+          <li>ล็อกอินด้วย Google Account (Gmail)</li>
+          <li>กดปุ่ม <b>Get API key</b> ➔ <b>Create API key</b></li>
+          <li>คัดลอกรหัสมาวางในช่องด้านบน แล้วกด "บันทึก" ได้เลย!</li>
+        </ol>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button class="btn btn-outline" style="flex:1" onclick="closeGeminiKeyModal()">ปิด</button>
+        <button class="btn btn-red" style="padding:8px 12px;font-size:12px" onclick="clearGeminiApiKey()">🗑️ ลบ Key</button>
+      </div>
+    </div>
   </div>
 
   <div class="toast" id="toast"></div>
@@ -1526,6 +1590,238 @@
     let tripHistory = []; // [{id,date,friends:[name],sessionNames:[name],totalBill,grandTotal}] ประวัติทริปที่เคยสร้างสรุปยอด (เก็บล่าสุด 30 ครั้ง)
 
     function initial(n) { return n.charAt(0).toUpperCase(); }
+
+    
+    /* ---- GEMINI VISION RECEIPT SCANNER ---- */
+    let targetScanSessionId = null;
+
+    function getGeminiApiKey() {
+      try { return (localStorage.getItem('sb_gemini_api_key') || '').trim(); } catch (e) { return ''; }
+    }
+
+    function setGeminiApiKey(key) {
+      const k = (key || '').trim();
+      try {
+        if (k) localStorage.setItem('sb_gemini_api_key', k);
+        else localStorage.removeItem('sb_gemini_api_key');
+      } catch (e) { }
+      updateGeminiKeyUI();
+    }
+
+    function clearGeminiApiKey() {
+      setGeminiApiKey('');
+      showToast('ลบ Gemini API Key เรียบร้อย');
+    }
+
+    function updateGeminiKeyUI() {
+      const k = getGeminiApiKey();
+      const modalInp = document.getElementById('geminiApiKeyModalInput');
+      const detailsInp = document.getElementById('geminiApiKeyDetailsInput');
+      const modalStatus = document.getElementById('geminiKeyStatusText');
+      const detailsStatus = document.getElementById('geminiKeyDetailsStatus');
+
+      if (modalInp) modalInp.value = k;
+      if (detailsInp) detailsInp.value = k;
+
+      const masked = k ? '✅ บันทึก Key แล้ว (' + k.substring(0, 6) + '...' + k.substring(k.length - 4) + ')' : '⚠️ ยังไม่ได้ตั้งค่า API Key';
+      if (modalStatus) {
+        modalStatus.textContent = masked;
+        modalStatus.style.color = k ? '#2E7D32' : '#C62828';
+      }
+      if (detailsStatus) {
+        detailsStatus.textContent = masked;
+        detailsStatus.style.color = k ? '#2E7D32' : '#C62828';
+      }
+    }
+
+    function openGeminiKeyModal() {
+      updateGeminiKeyUI();
+      const m = document.getElementById('geminiKeyModal');
+      if (m) m.style.display = 'flex';
+    }
+
+    function closeGeminiKeyModal() {
+      const m = document.getElementById('geminiKeyModal');
+      if (m) m.style.display = 'none';
+    }
+
+    function saveGeminiApiKeyFromModal() {
+      const inp = document.getElementById('geminiApiKeyModalInput');
+      const k = inp ? inp.value.trim() : '';
+      if (!k) { showToast('กรอก API Key ก่อนบันทึกนะ 😅'); return; }
+      setGeminiApiKey(k);
+      showToast('บันทึก Gemini API Key เรียบร้อย ✅');
+    }
+
+    function saveGeminiApiKeyFromDetails() {
+      const inp = document.getElementById('geminiApiKeyDetailsInput');
+      const k = inp ? inp.value.trim() : '';
+      if (!k) { showToast('กรอก API Key ก่อนบันทึกนะ 😅'); return; }
+      setGeminiApiKey(k);
+      showToast('บันทึก Gemini API Key เรียบร้อย ✅');
+    }
+
+    function triggerScanReceipt(sessionId) {
+      targetScanSessionId = sessionId;
+      const key = getGeminiApiKey();
+      if (!key) {
+        openGeminiKeyModal();
+        showToast('กรุณากรอก Gemini API Key เพื่อเริ่มสแกนใบเสร็จ');
+        return;
+      }
+      const fileInp = document.getElementById('receiptFileInput');
+      if (fileInp) {
+        fileInp.value = '';
+        fileInp.click();
+      }
+    }
+
+    async function handleReceiptImageSelected(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      const apiKey = getGeminiApiKey();
+      if (!apiKey) {
+        openGeminiKeyModal();
+        return;
+      }
+
+      if (file.size > 10 * 1024 * 1024) {
+        showToast('ไฟล์ภาพใหญ่เกินไป (กรุณาเลือกภาพขนาดไม่เกิน 10MB)');
+        return;
+      }
+
+      showToast('📷 กำลังส่งภาพให้ AI (Gemini 1.5 Flash) อ่านใบเสร็จ...');
+
+      try {
+        const base64Data = await readFileAsBase64(file);
+        const mimeType = file.type || 'image/jpeg';
+        const receiptData = await callGeminiVisionApi(base64Data, mimeType, apiKey);
+
+        applyReceiptDataToSession(receiptData, targetScanSessionId);
+      } catch (err) {
+        console.error('Receipt OCR error:', err);
+        showToast('❌ สแกนไม่สำเร็จ: ' + (err.message || 'เกิดข้อผิดพลาด'));
+      }
+    }
+
+    function readFileAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result;
+          const base64Str = result.split(',')[1];
+          resolve(base64Str);
+        };
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function callGeminiVisionApi(base64Data, mimeType, apiKey) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+      const promptText = `คุณคือผู้เชี่ยวชาญด้านการอ่านใบเสร็จรับเงิน/บิลค่าอาหาร กรุณาอ่านข้อมูลจากรูปภาพใบเสร็จนี้แล้วตอบกลับเฉพาะโครงสร้าง JSON ที่ถูกต้องเท่านั้น ห้ามมีข้อความเกริ่นหรือเครื่องหมาย markdown นอก JSON 
+โครงสร้าง JSON:
+{
+  "shopName": "ชื่อร้านอาหาร (ถ้าอ่านได้)",
+  "vatPercent": 0, (เปอร์เซ็นต์ VAT เช่น 7 หรือ 0 ถ้าไม่มี)
+  "totalAmount": 0, (ราคาสุทธิรวมทั้งหมด เป็นตัวเลข)
+  "items": [
+    {
+      "name": "ชื่อรายการอาหาร",
+      "amount": 0 (ราคาเป็นตัวเลข)
+    }
+  ]
+}`;
+
+      const payload = {
+        contents: [
+          {
+            parts: [
+              { text: promptText },
+              {
+                inline_data: {
+                  mime_type: mimeType,
+                  data: base64Data
+                }
+              }
+            ]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.1,
+          response_mime_type: "application/json"
+        }
+      };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({}));
+        const errMsg = errJson.error?.message || response.statusText;
+        if (response.status === 400 && errMsg.includes('API_KEY_INVALID')) {
+          throw new Error('API Key ไม่ถูกต้อง กรุณาตรวจสอบ Key ในการตั้งค่า');
+        }
+        throw new Error(`Gemini API error (${response.status}): ${errMsg}`);
+      }
+
+      const resData = await response.json();
+      const rawText = resData.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!rawText) throw new Error('AI ไม่ได้ส่งข้อมูลตอบกลับ');
+
+      // extract JSON
+      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error('รูปแบบข้อมูลจาก AI ไม่ถูกต้อง');
+
+      return JSON.parse(jsonMatch[0]);
+    }
+
+    function applyReceiptDataToSession(data, sessionId) {
+      let targetSession = null;
+      if (sessionId) {
+        targetSession = sessions.find(s => s.id === sessionId);
+      }
+
+      if (!targetSession) {
+        const id = 's' + (++sessionCounter);
+        targetSession = { id, name: '', amounts: [{ name: '', amount: '' }], who: [...friends.map(f => f.name)], foods: [], excludeFoods: [], vat: '' };
+        sessions.push(targetSession);
+      }
+
+      if (data.shopName && data.shopName.trim()) {
+        targetSession.name = data.shopName.trim();
+      }
+
+      if (data.vatPercent && parseFloat(data.vatPercent) > 0) {
+        targetSession.vat = String(data.vatPercent);
+      }
+
+      if (data.items && Array.isArray(data.items) && data.items.length > 0) {
+        // Clear empty food placeholders if present
+        targetSession.foods = data.items.filter(it => it && it.name && parseFloat(it.amount) > 0).map(it => ({
+          id: 'fb' + (++foodCounter),
+          name: it.name.trim(),
+          amount: String(parseFloat(it.amount) || 0),
+          payer: ''
+        }));
+      }
+
+      if ((!targetSession.foods || targetSession.foods.length === 0) && data.totalAmount && parseFloat(data.totalAmount) > 0) {
+        targetSession.amounts = [{ name: 'ยอดใบเสร็จ', amount: String(parseFloat(data.totalAmount)) }];
+      }
+
+      renderSessions();
+      saveState();
+
+      const shopInfo = targetSession.name ? `ร้าน "${targetSession.name}"` : 'ร้านใหม่';
+      const itemCount = (targetSession.foods || []).length;
+      showToast(`✨ อ่านใบเสร็จสำเร็จ! เพิ่มข้อมูลเข้า ${shopInfo} (${itemCount ? itemCount + ' รายการ' : 'ยอดรวม'}) แล้ว`);
+    }
 
     /* ---- TOKEN SYSTEM ---- */
     const TOKEN_SVG = `<svg class="token-icon" viewBox="0 0 24 24" width="1.15em" height="1.15em" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:-0.18em;flex-shrink:0;"><circle cx="12" cy="12" r="10" fill="url(#tokenCoinGrad)" stroke="#B88228" stroke-width="1.5"/><circle cx="12" cy="12" r="7.8" stroke="#FFF0B3" stroke-width="1" opacity="0.85"/><path d="M10 7.5H13C14.1 7.5 15 8.4 15 9.5C15 10.6 14.1 11.5 13 11.5M10 11.5H13.5C14.6 11.5 15.5 12.4 15.5 13.5C15.5 14.6 14.6 15.5 13.5 15.5H10M10 7.5V16.5M12 6V7.5M12 15.5V17" stroke="#633F05" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="tokenCoinGrad" x1="4" y1="4" x2="20" y2="20" gradientUnits="userSpaceOnUse"><stop stop-color="#FDE885"/><stop offset="0.5" stop-color="#D4A34B"/><stop offset="1" stop-color="#B88228"/></linearGradient></defs></svg>`;
@@ -1855,11 +2151,17 @@
         div.innerHTML = `
       <div class="session-head">
         <div class="session-num">${i + 1}</div>
-        <span style="flex:1;font-size:15px;font-weight:600">${s.name || 'ร้านที่ ' + (i + 1)}</span>
-        <button class="btn" style="padding:6px 10px;font-size:12px;margin-right:6px;background:#555;color:#fff;" onclick="addAmountToSession('${s.id}')">＋ยอดบิล</button>
-        ${i > 0 ? `<button class="btn btn-red" id="del-${s.id}" style="padding:6px 12px;font-size:13px" onclick="confirmDelete('${s.id}')">ลบ</button>` : ''}
+        <span style="font-size:15px;font-weight:600;margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px;">${s.name || 'ร้านที่ ' + (i + 1)}</span>
+        <button class="btn btn-outline" style="position:absolute;left:50%;transform:translateX(-50%);flex:none;width:auto;max-width:max-content;padding:3px 7px;font-size:11px;background:#FAF6ED;color:#143527;border-color:#D4A34B;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;line-height:1.2;border-radius:8px;" onclick="triggerScanReceipt('${s.id}')" title="ถ่ายรูปใบเสร็จให้ AI ช่วยกรอกรายการเข้าบิลร้านนี้">📷 AI สแกน</button>
+        <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+          <button class="btn" style="padding:6px 10px;font-size:12px;background:#555;color:#fff;" onclick="addAmountToSession('${s.id}')">＋ยอดบิล</button>
+          ${i > 0 ? `<button class="btn btn-red" id="del-${s.id}" style="padding:6px 12px;font-size:13px" onclick="confirmDelete('${s.id}')">ลบ</button>` : ''}
+        </div>
       </div>
       <div class="session-body">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:4px">
+          <span>💡 <b>AI สแกน:</b> ถ่ายรูปใบเสร็จเพื่อดึงชื่อเมนูและราคาเข้าบิลร้านนี้อัตโนมัติ</span>
+        </div>
         <div class="field-row" style="margin-bottom:8px">
           <input type="text" placeholder="ชื่อร้าน / โน้ต" value="${s.name}" oninput="updateSession('${s.id}','name',this.value)" style="flex:1">
           <input type="number" placeholder="VAT %" value="${s.vat !== undefined && s.vat !== null ? s.vat : ''}" inputmode="decimal" min="0" max="100" step="any" oninput="updateSession('${s.id}','vat',this.value)" style="max-width:90px">
@@ -3065,6 +3367,7 @@
 
     // init - load from localStorage first (instant, offline-first)
     loadState();
+    updateGeminiKeyUI();
     loadTokens();
     renderShortcuts();
     renderFriendChips();
