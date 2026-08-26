@@ -1722,16 +1722,16 @@
         'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent'
       ];
 
-      const promptText = `คุณคือผู้เชี่ยวชาญด้านการอ่านใบเสร็จรับเงิน/บิลค่าอาหาร กรุณาอ่านข้อมูลจากรูปภาพใบเสร็จนี้แล้วตอบกลับเฉพาะโครงสร้าง JSON ที่ถูกต้องเท่านั้น ห้ามมีข้อความเกริ่นหรือเครื่องหมาย markdown นอก JSON 
+      const promptText = `คุณคือผู้เชี่ยวชาญด้านการอ่านใบเสร็จรับเงิน/บิลค่าอาหาร กรุณาอ่านข้อมูลจากรูปภาพใบเสร็จนี้แล้วคำนวณยอดรวมทั้งหมดให้ถูกต้อง และตอบกลับเฉพาะโครงสร้าง JSON ที่ถูกต้องเท่านั้น ห้ามมีข้อความเกริ่นหรือ markdown นอก JSON 
 โครงสร้าง JSON:
 {
   "shopName": "ชื่อร้านอาหาร (ถ้าอ่านได้)",
   "vatPercent": 0,
-  "totalAmount": 0,
+  "totalAmount": 0, (ราคารวมสุทธิทั้งหมด หรือผลรวมของราคาทุกรายการ เป็นตัวเลข)
   "items": [
     {
       "name": "ชื่อรายการอาหาร",
-      "amount": 0
+      "amount": 0 (ราคาเป็นตัวเลข)
     }
   ]
 }`;
@@ -2287,6 +2287,18 @@
       }
       if (!s.amounts[idx]) s.amounts[idx] = { name: '', amount: '' };
       s.amounts[idx][key] = val;
+
+      const subEl = document.getElementById('subtotal-' + s.id);
+      if (subEl) {
+        const validAmounts = s.amounts.filter(a => a && parseFloat(a.amount) > 0);
+        const totalSessionAmt = validAmounts.reduce((sum, a) => sum + (parseFloat(a.amount) || 0), 0);
+        if (s.amounts.length > 1 && validAmounts.length > 0) {
+          subEl.style.display = 'flex';
+          subEl.innerHTML = `<span>รวมยอดเงินอัตโนมัติ (${validAmounts.length} รายการ):</span><span style="color:var(--green-dark);font-weight:700">฿${totalSessionAmt.toLocaleString()}</span>`;
+        } else {
+          subEl.style.display = 'none';
+        }
+      }
       saveState();
     }
     function renderAmountsInSession(s) {
@@ -2311,6 +2323,16 @@
       ${s.amounts.length > 1 ? `<button onclick="removeAmountFromSession('${s.id}',${idx})" style="border:none;background:none;color:var(--danger);font-size:18px;cursor:pointer;padding:2px 4px;flex-shrink:0;line-height:1">✕</button>` : ''}`;
         el.appendChild(row);
       });
+
+      const validAmounts = s.amounts.filter(a => a && parseFloat(a.amount) > 0);
+      const totalSessionAmt = validAmounts.reduce((sum, a) => sum + (parseFloat(a.amount) || 0), 0);
+      const showSub = s.amounts.length > 1 && validAmounts.length > 0;
+
+      const subtotalDiv = document.createElement('div');
+      subtotalDiv.id = 'subtotal-' + s.id;
+      subtotalDiv.style.cssText = `display:${showSub ? 'flex' : 'none'};justify-content:space-between;align-items:center;padding:7px 12px;background:#EBF5F0;border:1px solid #C3E2D3;border-radius:10px;font-size:13px;font-weight:600;color:var(--green-dark);margin-top:2px;`;
+      subtotalDiv.innerHTML = `<span>รวมยอดเงินอัตโนมัติ (${validAmounts.length} รายการ):</span><span style="color:var(--green-dark);font-weight:700">฿${totalSessionAmt.toLocaleString()}</span>`;
+      el.appendChild(subtotalDiv);
     }
     function toggleWho(sid, name) {
       const s = sessions.find(x => x.id === sid);
