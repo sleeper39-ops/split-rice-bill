@@ -1046,13 +1046,7 @@
         <hr style="border:none;border-top:1px solid var(--border);margin:18px 0">
 
         <!-- Sessions -->
-        <div style="position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:6px;min-height:28px">
-          <div class="sec-title" style="position:absolute;left:0;margin:0">🍽️ บิลแต่ละร้าน</div>
-          <button class="btn btn-outline" style="flex:none;width:auto;max-width:max-content;padding:3px 8px;font-size:11px;background:#FAF6ED;color:#143527;border-color:#D4A34B;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;line-height:1.2;border-radius:8px;" onclick="triggerScanReceipt(null)" title="ถ่ายรูปใบเสร็จเพื่อสร้างร้านใหม่พร้อมรายการอาหารอัตโนมัติ">📷 สแกนใบเสร็จ AI</button>
-        </div>
-        <div style="font-size:11px;color:var(--muted);margin:0 0 10px">
-          💡 <b>สแกนใบเสร็จ AI:</b> ถ่ายรูปใบเสร็จเพื่อสร้างร้านใหม่และดึงรายการอาหารอัตโนมัติ
-        </div>
+        <div class="sec-title">🍽️ บิลแต่ละร้าน</div>
         <div class="sessions" id="sessionList"></div>
         <button class="add-session-btn" onclick="addSession()"
           style="margin-top:10px;border-style:solid;border-color:var(--green);color:var(--green);background:var(--green-light);"
@@ -1176,15 +1170,13 @@
 
         <div class="sec-title" style="margin-top:18px">❓ คำถามที่พบบ่อย</div>
                 <div class="faq-item">
-          <div class="faq-q">ปุ่มสแกนใบเสร็จ AI ทั้ง 2 ปุ่ม แตกต่างกันอย่างไรและใช้งานยังไง?</div>
+          <div class="faq-q">ปุ่ม "📷 AI สแกนใบเสร็จ" ใช้งานยังไง?</div>
           <div class="faq-a">
-            ในหน้าหารบิลจะมีปุ่มสแกนใบเสร็จด้วย AI (Google Gemini 1.5 Flash) ให้เลือกใช้งาน 2 รูปแบบตามความสะดวก:<br>
-            • <b>1. ปุ่ม "📷 สแกนใบเสร็จ AI" (ด้านบนหัวข้อบิลแต่ละร้าน):</b> ใช้สำหรับสแกนใบเสร็จเพื่อ <u>สร้างร้านใหม่</u> พร้อมอ่านชื่อร้าน รายการอาหาร และราคาลงในร้านใหม่ให้อัตโนมัติทันที<br>
-            • <b>2. ปุ่ม "📷 AI สแกน" (ที่หัวการ์ดร้านแต่ละร้าน):</b> ใช้สำหรับสแกนใบเสร็จเพื่อ <u>นำรายการอาหารและราคาเข้าบิลร้านนั้นๆ โดยตรง</u> เหมาะสำหรับกรณีสร้างร้านไว้แล้วต้องการถ่ายใบเสร็จเติมเข้าไป<br><br>
+            ใช้สำหรับถ่ายรูปหรือเลือกภาพใบเสร็จรับเงิน (อยู่ที่หัวการ์ดร้านที่ 1) เพื่อให้ AI (Google Gemini) ช่วยอ่านชื่อร้าน, เปอร์เซ็นต์ VAT และยอดเงินรวมทั้งหมด เข้าสู่บิลร้านให้อัตโนมัติทันที ไม่ต้องพิมพ์เองให้เสียเวลา<br><br>
             <b>วิธีเปิดใช้งานฟรี 100% (วันละ 1,500 รูป):</b><br>
             1. สมัครขอรับ Gemini API Key ฟรีที่ <a href="https://aistudio.google.com/" target="_blank" rel="noopener" style="color:var(--green);font-weight:700;text-decoration:underline;">Google AI Studio</a><br>
             2. นำรหัส Key มากรอกในช่อง "ตั้งค่า Gemini API Key" ด้านบน แล้วกดบันทึก<br>
-            3. กดปุ่มสแกน AI จุดใดก็ได้ แล้วถ่ายรูปหรือเลือกภาพใบเสร็จเพื่อเริ่มใช้งานได้ทันที
+            3. กดปุ่ม <b>"📷 AI สแกนใบเสร็จ"</b> ที่ร้านที่ 1 แล้วถ่ายรูปหรือเลือกภาพใบเสร็จเพื่อเริ่มใช้งานได้ทันที
           </div>
         </div>
 
@@ -1850,25 +1842,39 @@
         targetSession.vat = String(data.vatPercent);
       }
 
-      // นำรายการและราคาเข้าช่อง รายการ / โน้ต และ ยอดเงิน (amounts)
-      if (data.items && Array.isArray(data.items) && data.items.length > 0) {
-        const validItems = data.items.filter(it => it && (it.name || parseFloat(it.amount) > 0));
-        if (validItems.length > 0) {
-          targetSession.amounts = validItems.map(it => ({
-            name: (it.name || '').trim(),
-            amount: String(parseFloat(it.amount) || '')
-          }));
-        }
-      } else if (data.totalAmount && parseFloat(data.totalAmount) > 0) {
-        targetSession.amounts = [{ name: 'ยอดใบเสร็จ', amount: String(parseFloat(data.totalAmount)) }];
+      // คำนวณยอดเงินรวมและตั้งค่าช่อง รายการ / โน้ต
+      let validItems = [];
+      if (data.items && Array.isArray(data.items)) {
+        validItems = data.items.filter(it => it && (it.name || parseFloat(it.amount) > 0));
+      }
+
+      const sumAmount = validItems.reduce((acc, it) => acc + (parseFloat(it.amount) || 0), 0);
+      const totalNum = (data.totalAmount && parseFloat(data.totalAmount) > 0) ? parseFloat(data.totalAmount) : sumAmount;
+
+      if (validItems.length >= 2) {
+        // เมื่อมี 2 รายการขึ้นไป ช่องรายการ/โน้ต เป็น "รวมทั้งหมด" ช่องยอดเงิน ใส่ยอดเงินรวมอัตโนมัติ
+        targetSession.amounts = [{
+          name: 'รวมทั้งหมด',
+          amount: String(totalNum > 0 ? totalNum : (sumAmount > 0 ? sumAmount : ''))
+        }];
+      } else if (validItems.length === 1) {
+        targetSession.amounts = [{
+          name: (validItems[0].name || '').trim() || 'รวมทั้งหมด',
+          amount: String(parseFloat(validItems[0].amount) || totalNum || '')
+        }];
+      } else if (totalNum > 0) {
+        targetSession.amounts = [{
+          name: 'รวมทั้งหมด',
+          amount: String(totalNum)
+        }];
       }
 
       renderSessions();
       saveState();
 
       const shopInfo = targetSession.name ? `ร้าน "${targetSession.name}"` : 'ร้านใหม่';
-      const itemCount = (targetSession.amounts || []).length;
-      showToast(`✨ อ่านใบเสร็จสำเร็จ! เพิ่มข้อมูลเข้า ${shopInfo} (${itemCount ? itemCount + ' รายการ' : 'ยอดรวม'}) แล้ว`);
+      const totalDisplay = targetSession.amounts[0]?.amount ? `${targetSession.amounts[0].amount} ฿` : '';
+      showToast(`✨ อ่านใบเสร็จสำเร็จ! เพิ่มข้อมูลเข้า ${shopInfo} ${totalDisplay ? '(' + totalDisplay + ')' : ''} เรียบร้อยแล้ว`);
     }
 
     /* ---- TOKEN SYSTEM ---- */
@@ -2199,17 +2205,14 @@
         div.innerHTML = `
       <div class="session-head">
         <div class="session-num">${i + 1}</div>
-        <span style="font-size:15px;font-weight:600;margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px;">${s.name || 'ร้านที่ ' + (i + 1)}</span>
-        <button class="btn btn-outline" style="position:absolute;left:50%;transform:translateX(-50%);flex:none;width:auto;max-width:max-content;padding:3px 7px;font-size:11px;background:#FAF6ED;color:#143527;border-color:#D4A34B;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;line-height:1.2;border-radius:8px;" onclick="triggerScanReceipt('${s.id}')" title="ถ่ายรูปใบเสร็จให้ AI ช่วยกรอกรายการเข้าบิลร้านนี้">📷 AI สแกน</button>
+        <span style="font-size:15px;font-weight:600;margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">${s.name || 'ร้านที่ ' + (i + 1)}</span>
+        ${i === 0 ? `<button class="btn btn-outline" style="position:absolute;left:50%;transform:translateX(-50%);flex:none;width:auto;max-width:max-content;padding:4px 9px;font-size:11.5px;background:#FAF6ED;color:#143527;border-color:#D4A34B;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;line-height:1.2;border-radius:8px;" onclick="triggerScanReceipt('${s.id}')" title="ถ่ายรูปใบเสร็จให้ AI ช่วยกรอกยอดเงินเข้าบิลร้านนี้">📷 AI สแกนใบเสร็จ</button>` : ''}
         <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
           <button class="btn" style="padding:6px 10px;font-size:12px;background:#555;color:#fff;" onclick="addAmountToSession('${s.id}')">＋ยอดบิล</button>
           ${i > 0 ? `<button class="btn btn-red" id="del-${s.id}" style="padding:6px 12px;font-size:13px" onclick="confirmDelete('${s.id}')">ลบ</button>` : ''}
         </div>
       </div>
       <div class="session-body">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:4px">
-          <span>💡 <b>AI สแกน:</b> ถ่ายรูปใบเสร็จเพื่อดึงชื่อเมนูและราคาเข้าบิลร้านนี้อัตโนมัติ</span>
-        </div>
         <div class="field-row" style="margin-bottom:8px">
           <input type="text" placeholder="ชื่อร้าน / โน้ต" value="${s.name}" oninput="updateSession('${s.id}','name',this.value)" style="flex:1">
           <input type="number" placeholder="VAT %" value="${s.vat !== undefined && s.vat !== null ? s.vat : ''}" inputmode="decimal" min="0" max="100" step="any" oninput="updateSession('${s.id}','vat',this.value)" style="max-width:90px">
@@ -2218,9 +2221,9 @@
         <div class="who-label">ใครไปบ้าง (แตะเพื่อเลือก/เลือกออก)</div>
         <div class="who-grid" id="who-${s.id}"></div>
         <div style="margin-top:12px">
-          <div class="who-label" style="margin-bottom:6px">🍽️ บิลค่าอาหาร (จ่ายคนเดียว)</div>
+          <div class="who-label" style="margin-bottom:6px">👤 รายการแยก (จ่ายคนเดียว)</div>
           <div id="food-${s.id}" style="display:flex;flex-direction:column;gap:8px"></div>
-          <button class="add-session-btn" onclick="addFoodToSession('${s.id}')" style="margin-top:8px;padding:9px;font-size:13px;border-style:solid;border-color:#b3dff0;color:#0077cc;background:#f0f9ff" onmouseover="this.style.borderColor='#0077cc';this.style.background='#e0f2ff'" onmouseout="this.style.borderColor='#b3dff0';this.style.background='#f0f9ff'">＋ เพิ่มบิลค่าอาหาร (จ่ายคนเดียว)</button>
+          <button class="add-session-btn" onclick="addFoodToSession('${s.id}')" style="margin-top:8px;padding:9px;font-size:13px;border-style:solid;border-color:#b3dff0;color:#0077cc;background:#f0f9ff" onmouseover="this.style.borderColor='#0077cc';this.style.background='#e0f2ff'" onmouseout="this.style.borderColor='#b3dff0';this.style.background='#f0f9ff'">＋ เพิ่มรายการแยก (จ่ายคนเดียว)</button>
         </div>
         <div style="margin-top:12px">
           <div class="who-label" style="margin-bottom:6px">🚫 รายการแยก (คนนี้ไม่ต้องจ่าย)</div>
@@ -2376,7 +2379,7 @@
           : `<button class="btn btn-red" style="padding:6px 14px;font-size:12px;margin-left:auto" onclick="askRemoveFood('${f.id}')">ลบ</button>`;
         div.innerHTML = `
       <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#e0f2ff">
-        <span style="font-size:12px;font-weight:700;color:#0077cc">🍽️ อาหาร ${i + 1}</span>
+        <span style="font-size:12px;font-weight:700;color:#0077cc">👤 รายการแยก (จ่ายคนเดียว) ${i + 1}</span>
         ${delBtn}
       </div>
       <div style="padding:10px 12px;display:flex;flex-direction:column;gap:8px">
@@ -3078,7 +3081,7 @@
         (s.foods || []).forEach(fb => {
           const amt = parseFloat(fb.amount) || 0;
           if (!amt || !fb.payer) return;
-          bannerLines.push(`🍽️ ${fb.name || 'ค่าอาหาร'}: ฿${amt.toLocaleString()} (${fb.payer} จ่ายคนเดียว)`);
+          bannerLines.push(`👤 ${fb.name || 'รายการแยก'}: ฿${amt.toLocaleString()} (${fb.payer} จ่ายคนเดียว)`);
         });
       });
 
@@ -3104,7 +3107,7 @@
       const rowsInfo = rows.map((f, idx) => {
         const info = totals[f.name];
         const bd = (info.breakdown || []).map(b => {
-          if (b.food) return { icon: '🍽️', label: b.label, note: b.pax > 1 ? `฿${b.bill.toLocaleString()} ÷ ${b.pax} คน` : 'จ่ายคนเดียว', amount: b.amount };
+          if (b.food) return { icon: '👤', label: b.label, note: b.pax > 1 ? `฿${b.bill.toLocaleString()} ÷ ${b.pax} คน` : 'จ่ายคนเดียว', amount: b.amount };
           return { icon: '📍', label: b.label, note: `฿${b.bill.toLocaleString()} ÷ ${b.pax} คน`, amount: b.amount };
         });
         const bdBoxH = bd.length > 1 ? BD_PAD_Y * 2 + bd.length * BD_ROW_H + (bd.length - 1) * BD_ROW_GAP : 0;
