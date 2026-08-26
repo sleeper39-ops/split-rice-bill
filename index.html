@@ -1850,17 +1850,16 @@
         targetSession.vat = String(data.vatPercent);
       }
 
+      // นำรายการและราคาเข้าช่อง รายการ / โน้ต และ ยอดเงิน (amounts)
       if (data.items && Array.isArray(data.items) && data.items.length > 0) {
-        // Clear empty food placeholders if present
-        targetSession.foods = data.items.filter(it => it && it.name && parseFloat(it.amount) > 0).map(it => ({
-          id: 'fb' + (++foodCounter),
-          name: it.name.trim(),
-          amount: String(parseFloat(it.amount) || 0),
-          payer: ''
-        }));
-      }
-
-      if ((!targetSession.foods || targetSession.foods.length === 0) && data.totalAmount && parseFloat(data.totalAmount) > 0) {
+        const validItems = data.items.filter(it => it && (it.name || parseFloat(it.amount) > 0));
+        if (validItems.length > 0) {
+          targetSession.amounts = validItems.map(it => ({
+            name: (it.name || '').trim(),
+            amount: String(parseFloat(it.amount) || '')
+          }));
+        }
+      } else if (data.totalAmount && parseFloat(data.totalAmount) > 0) {
         targetSession.amounts = [{ name: 'ยอดใบเสร็จ', amount: String(parseFloat(data.totalAmount)) }];
       }
 
@@ -1868,7 +1867,7 @@
       saveState();
 
       const shopInfo = targetSession.name ? `ร้าน "${targetSession.name}"` : 'ร้านใหม่';
-      const itemCount = (targetSession.foods || []).length;
+      const itemCount = (targetSession.amounts || []).length;
       showToast(`✨ อ่านใบเสร็จสำเร็จ! เพิ่มข้อมูลเข้า ${shopInfo} (${itemCount ? itemCount + ' รายการ' : 'ยอดรวม'}) แล้ว`);
     }
 
