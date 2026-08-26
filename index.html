@@ -1835,14 +1835,18 @@
       }
 
       if (data.shopName && data.shopName.trim()) {
-        targetSession.name = data.shopName.trim();
+        if (!targetSession.name || targetSession.name.startsWith('ร้านที่ ')) {
+          targetSession.name = data.shopName.trim();
+        }
       }
 
       if (data.vatPercent && parseFloat(data.vatPercent) > 0) {
-        targetSession.vat = String(data.vatPercent);
+        if (!targetSession.vat) {
+          targetSession.vat = String(data.vatPercent);
+        }
       }
 
-      // คำนวณยอดเงินรวมและตั้งค่าช่อง รายการ / โน้ต
+      // คำนวณยอดเงินรวมของใบเสร็จนี้
       let validItems = [];
       if (data.items && Array.isArray(data.items)) {
         validItems = data.items.filter(it => it && (it.name || parseFloat(it.amount) > 0));
@@ -1850,31 +1854,35 @@
 
       const sumAmount = validItems.reduce((acc, it) => acc + (parseFloat(it.amount) || 0), 0);
       const totalNum = (data.totalAmount && parseFloat(data.totalAmount) > 0) ? parseFloat(data.totalAmount) : sumAmount;
+      const amountStr = totalNum > 0 ? String(totalNum) : (sumAmount > 0 ? String(sumAmount) : '');
 
-      if (validItems.length >= 2) {
-        // เมื่อมี 2 รายการขึ้นไป ช่องรายการ/โน้ต เป็น "รวมทั้งหมด" ช่องยอดเงิน ใส่ยอดเงินรวมอัตโนมัติ
-        targetSession.amounts = [{
-          name: 'รวมทั้งหมด',
-          amount: String(totalNum > 0 ? totalNum : (sumAmount > 0 ? sumAmount : ''))
-        }];
-      } else if (validItems.length === 1) {
-        targetSession.amounts = [{
-          name: (validItems[0].name || '').trim() || 'รวมทั้งหมด',
-          amount: String(parseFloat(validItems[0].amount) || totalNum || '')
-        }];
-      } else if (totalNum > 0) {
-        targetSession.amounts = [{
-          name: 'รวมทั้งหมด',
-          amount: String(totalNum)
-        }];
-      }
+      // จัดการรายการยอดบิล (amounts) ให้รันเลขตามลำดับ 'ใบเสร็จ 1', 'ใบเสร็จ 2', ...
+      if (!targetSession.amounts) targetSession.amounts = [];
+
+      // คัดเฉพาะรายการที่มีข้อมูลอยู่แล้ว (ไม่รวมแถวว่างเปล่า)
+      const existingValid = targetSession.amounts.filter(a => {
+        if (!a) return false;
+        const n = (a.name || '').trim();
+        const amt = String(a.amount || '').trim();
+        return n !== '' || amt !== '';
+      });
+
+      const nextNum = existingValid.length + 1;
+      const receiptLabel = `ใบเสร็จ ${nextNum}`;
+
+      existingValid.push({
+        name: receiptLabel,
+        amount: amountStr
+      });
+
+      targetSession.amounts = existingValid;
 
       renderSessions();
       saveState();
 
-      const shopInfo = targetSession.name ? `ร้าน "${targetSession.name}"` : 'ร้านใหม่';
-      const totalDisplay = targetSession.amounts[0]?.amount ? `${targetSession.amounts[0].amount} ฿` : '';
-      showToast(`✨ อ่านใบเสร็จสำเร็จ! เพิ่มข้อมูลเข้า ${shopInfo} ${totalDisplay ? '(' + totalDisplay + ')' : ''} เรียบร้อยแล้ว`);
+      const shopInfo = targetSession.name ? `ร้าน "${targetSession.name}"` : 'ร้านที่ 1';
+      const amtDisplay = amountStr ? ` (${amountStr} ฿)` : '';
+      showToast(`✨ อ่านใบเสร็จสำเร็จ! เพิ่ม "${receiptLabel}" เข้า ${shopInfo}${amtDisplay} เรียบร้อยแล้ว`);
     }
 
     /* ---- TOKEN SYSTEM ---- */
