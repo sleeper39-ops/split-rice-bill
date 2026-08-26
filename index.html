@@ -1061,7 +1061,12 @@
     <div class="section active" id="tab-setup">
       <div class="card">
         <!-- Friends -->
-        <div class="sec-title">👥 คนที่ไปด้วยกัน</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px">
+          <div class="sec-title" style="margin:0">👥 คนที่ไปด้วยกัน</div>
+          <div id="clearFriendsActionWrap">
+            <button type="button" class="btn-outline" style="padding:3px 9px;font-size:11.5px;color:var(--danger);border-color:rgba(201,24,53,0.4);border-radius:8px;background:#fff;" onclick="askClearFriends()" title="ล้างรายชื่อเพื่อนทั้งหมดในบิลนี้">🧹 ล้างชื่อเพื่อน</button>
+          </div>
+        </div>
         <div class="friend-chips" id="friendChips"><span style="font-size:13px;color:var(--muted)">ยังไม่มีเพื่อน</span>
         </div>
         <div class="add-row">
@@ -1682,6 +1687,26 @@
       return `${day}-${month}-${yearBE} ${hours}:${minutes}`;
     }
 
+    function toDateTimeLocalValue(d = new Date()) {
+      const dateObj = (d instanceof Date && !isNaN(d.getTime())) ? d : new Date(d || Date.now());
+      if (isNaN(dateObj.getTime())) return '';
+      const pad = n => String(n).padStart(2, '0');
+      const y = dateObj.getFullYear();
+      const m = pad(dateObj.getMonth() + 1);
+      const day = pad(dateObj.getDate());
+      const h = pad(dateObj.getHours());
+      const min = pad(dateObj.getMinutes());
+      return `${y}-${m}-${day}T${h}:${min}`;
+    }
+
+    function setBillDateToNow() {
+      const el = document.getElementById('billDateTimeInput');
+      if (el) {
+        el.value = toDateTimeLocalValue(new Date());
+        showToast('ตั้งวันที่และเวลาเป็นตอนนี้แล้ว ⏱️');
+      }
+    }
+
     function initial(n) { return n.charAt(0).toUpperCase(); }
 
     
@@ -2283,7 +2308,53 @@
       renderCurrentFriendsPreview();
       saveState();
     }
+    let pendingClearAllFriends = false;
+    function askClearFriends() {
+      if (!friends.length) {
+        showToast('ยังไม่มีรายชื่อเพื่อนในบิล');
+        return;
+      }
+      pendingClearAllFriends = true;
+      renderClearFriendsBtn();
+    }
+    function cancelClearFriends() {
+      pendingClearAllFriends = false;
+      renderClearFriendsBtn();
+    }
+    function confirmClearFriends() {
+      friends = [];
+      pendingClearAllFriends = false;
+      sessions.forEach(s => {
+        s.who = [];
+        s.foods = [];
+        s.excludeFoods = [];
+        renderWho(s);
+        renderFoodsInSession(s);
+        renderExcludeFoodsInSession(s);
+      });
+      renderFriendChips();
+      renderClearFriendsBtn();
+      renderCurrentFriendsPreview();
+      saveState();
+      showToast('ล้างรายชื่อเพื่อนทั้งหมดแล้ว 👥');
+    }
+    function renderClearFriendsBtn() {
+      const wrap = document.getElementById('clearFriendsActionWrap');
+      if (!wrap) return;
+      if (pendingClearAllFriends) {
+        wrap.innerHTML = `
+          <span style="display:inline-flex;align-items:center;gap:5px">
+            <button type="button" class="btn btn-red" style="padding:3px 8px;font-size:11.5px;border-radius:8px" onclick="confirmClearFriends()">ยืนยันล้าง</button>
+            <button type="button" class="btn" style="padding:3px 8px;font-size:11.5px;border-radius:8px;background:#eee;color:#555" onclick="cancelClearFriends()">ยกเลิก</button>
+          </span>`;
+      } else {
+        wrap.innerHTML = `
+          <button type="button" class="btn-outline" style="padding:3px 9px;font-size:11.5px;color:var(--danger);border-color:rgba(201,24,53,0.4);border-radius:8px;background:#fff;" onclick="askClearFriends()" title="ล้างรายชื่อเพื่อนทั้งหมดในบิลนี้">🧹 ล้างชื่อเพื่อน</button>`;
+      }
+    }
+
     function renderFriendChips() {
+      renderClearFriendsBtn();
       const el = document.getElementById('friendChips');
       if (!el) return;
       if (!friends.length) { el.innerHTML = '<span style="font-size:13px;color:var(--muted)">ยังไม่มีเพื่อน</span>'; return; }
@@ -2467,6 +2538,34 @@
       if (!wrap) return;
       wrap.outerHTML = `<button class="btn btn-red" id="del-${id}" style="padding:6px 12px;font-size:13px" onclick="confirmDelete('${id}')">ลบ</button>`;
     }
+
+    let pendingSessionClear = null;
+
+    function askClearSession(sid) {
+      pendingSessionClear = sid;
+      renderSessions();
+    }
+
+    function cancelClearSession() {
+      pendingSessionClear = null;
+      renderSessions();
+    }
+
+    function confirmClearSession(sid) {
+      const s = sessions.find(x => x.id === sid);
+      if (!s) return;
+      s.name = '';
+      s.amounts = [{ name: '', amount: '' }];
+      s.foods = [];
+      s.excludeFoods = [];
+      s.vat = '';
+      s.who = [...friends.map(f => f.name)];
+      pendingSessionClear = null;
+      renderSessions();
+      saveState();
+      showToast('ล้างข้อมูลร้านนี้เรียบร้อย 🧹');
+    }
+
     function renderSessions() {
       const el = document.getElementById('sessionList');
       if (!sessions.length) { el.innerHTML = ''; return; }
@@ -2475,11 +2574,20 @@
         const div = document.createElement('div');
         div.className = 'session-card';
         div.id = 'sc-' + s.id;
+
+        const clearBtn = pendingSessionClear === s.id
+          ? `<span style="display:inline-flex;align-items:center;gap:4px">
+              <button type="button" class="btn btn-red" style="padding:4px 8px;font-size:11px;border-radius:8px" onclick="confirmClearSession('${s.id}')">ยืนยันล้าง</button>
+              <button type="button" class="btn" style="padding:4px 8px;font-size:11px;border-radius:8px;background:#eee;color:#555" onclick="cancelClearSession()">ยกเลิก</button>
+            </span>`
+          : `<button type="button" class="btn-outline" style="padding:4px 8px;font-size:11.5px;color:#c91835;border-color:rgba(201,24,53,0.35);background:#fff;border-radius:8px;" onclick="askClearSession('${s.id}')" title="ล้างยอดเงินและรายการของร้านนี้">🧹 ล้างข้อมูล</button>`;
+
         div.innerHTML = `
       <div class="session-head">
         <div class="session-num">${i + 1}</div>
         <span style="font-size:15px;font-weight:600;margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.name || 'ร้านที่ ' + (i + 1)}</span>
         <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+          ${clearBtn}
           <button class="btn" style="padding:6px 10px;font-size:12px;background:#555;color:#fff;" onclick="addAmountToSession('${s.id}')">＋ยอดบิล</button>
           ${i > 0 ? `<button class="btn btn-red" id="del-${s.id}" style="padding:6px 12px;font-size:13px" onclick="confirmDelete('${s.id}')">ลบ</button>` : ''}
         </div>
@@ -2781,7 +2889,7 @@
 
       const ppNum = (document.getElementById('ppNum') ? document.getElementById('ppNum').value : '').trim();
 
-      // บันทึก/อัปเดตวันและเวลาของสรุปยอด
+      // บันทึกวันและเวลาของสรุปยอดอัตโนมัติเมื่อกดสรุปยอด (หรือใช้วันที่เดิมเมื่อโหลดจากประวัติ)
       _resultDate = targetDate ? new Date(targetDate) : new Date();
       if (isNaN(_resultDate.getTime())) _resultDate = new Date();
 
@@ -2903,7 +3011,7 @@
         banner.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;flex-wrap:wrap">
         <div class="sb-label" style="margin:0">ยอดรวมทั้งหมด (${sessions.length} ร้าน)${vatText}</div>
-        <div style="font-size:12px;font-weight:700;background:rgba(255,255,255,0.18);padding:3px 10px;border-radius:12px;color:#FAF6ED;border:1px solid rgba(212,163,75,0.4);display:inline-flex;align-items:center;gap:4px">📅 ${dtText}</div>
+        <div style="font-size:12px;font-weight:700;background:rgba(255,255,255,0.18);padding:4px 10px;border-radius:12px;color:#FAF6ED;border:1px solid rgba(212,163,75,0.4);display:inline-flex;align-items:center;gap:5px">📅 ${dtText}</div>
       </div>
       <div class="sb-val">฿${totalBill.toLocaleString()}</div>
       <div class="sb-sub">👥 ${friends.length} คน • เก็บรวม ฿${grandTotal.toLocaleString()}</div>`;
@@ -3049,7 +3157,7 @@
       <div class="session-head" style="background:#F4F8F6;padding:12px 14px;border-bottom:1px solid var(--border)">
         <div class="session-num" style="background:#1E4D38;color:#FAF6ED;font-size:14px">🕓</div>
         <div style="flex:1;min-width:0">
-          <div style="font-weight:700;font-size:14px;color:var(--text)">${dateStr}</div>
+          <div style="font-weight:700;font-size:14px;color:var(--text)">📅 ${dateStr}</div>
           <div style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">👥 ${friendCount} คน${shopInfo}</div>
         </div>
         <div style="text-align:right">
