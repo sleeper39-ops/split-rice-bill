@@ -2213,14 +2213,17 @@
         div.innerHTML = `
       <div class="session-head">
         <div class="session-num">${i + 1}</div>
-        <span style="font-size:15px;font-weight:600;margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">${s.name || 'ร้านที่ ' + (i + 1)}</span>
-        ${i === 0 ? `<button class="btn btn-outline" style="position:absolute;left:50%;transform:translateX(-50%);flex:none;width:auto;max-width:max-content;padding:4px 9px;font-size:11.5px;background:#FAF6ED;color:#143527;border-color:#D4A34B;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;line-height:1.2;border-radius:8px;" onclick="triggerScanReceipt('${s.id}')" title="ถ่ายรูปใบเสร็จให้ AI ช่วยกรอกยอดเงินเข้าบิลร้านนี้">📷 AI สแกนใบเสร็จ</button>` : ''}
+        <span style="font-size:15px;font-weight:600;margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.name || 'ร้านที่ ' + (i + 1)}</span>
         <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
           <button class="btn" style="padding:6px 10px;font-size:12px;background:#555;color:#fff;" onclick="addAmountToSession('${s.id}')">＋ยอดบิล</button>
           ${i > 0 ? `<button class="btn btn-red" id="del-${s.id}" style="padding:6px 12px;font-size:13px" onclick="confirmDelete('${s.id}')">ลบ</button>` : ''}
         </div>
       </div>
       <div class="session-body">
+        ${i === 0 ? `
+        <div style="display:flex;justify-content:center;margin-bottom:10px">
+          <button type="button" class="btn btn-outline" style="flex:none;width:auto;max-width:max-content;padding:6px 14px;font-size:13px;background:#FAF6ED;color:#143527;border:1.5px solid #D4A34B;font-weight:700;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;line-height:1.2;border-radius:10px;box-shadow:0 1px 4px rgba(212,163,75,0.15);" onclick="triggerScanReceipt('${s.id}')" title="ถ่ายรูปใบเสร็จให้ AI ช่วยกรอกยอดเงินเข้าบิลร้านนี้">📷 AI สแกนใบเสร็จ</button>
+        </div>` : ''}
         <div class="field-row" style="margin-bottom:8px">
           <input type="text" placeholder="ชื่อร้าน / โน้ต" value="${s.name}" oninput="updateSession('${s.id}','name',this.value)" style="flex:1">
           <input type="number" placeholder="VAT %" value="${s.vat !== undefined && s.vat !== null ? s.vat : ''}" inputmode="decimal" min="0" max="100" step="any" oninput="updateSession('${s.id}','vat',this.value)" style="max-width:90px">
