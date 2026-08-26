@@ -1099,13 +1099,18 @@
         <div class="sec-title">🤝 บิลนี้หารกัน</div>
         <div class="sessions" id="sessionList"></div>
         <button class="add-session-btn" onclick="addSession()"
-          style="margin-top:10px;border-style:solid;border-color:var(--green);color:var(--green);background:var(--green-light);"
-          onmouseover="this.style.borderColor='var(--green-hover)';this.style.color='var(--green-hover)';this.style.background='#DCEFE5'"
-          onmouseout="this.style.borderColor='var(--green)';this.style.color='var(--green)';this.style.background='var(--green-light)'">＋
-          เพิ่มร้าน / บิล</button>
+          style="margin-top:12px;padding:11px 16px;font-size:13.5px;font-weight:600;border:1.5px dashed #D4A34B;color:#784E0B;background:#FAF6ED;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 1px 4px rgba(212,163,75,0.12);transition:all .2s;cursor:pointer;"
+          onmouseover="this.style.background='#F4EAD2';this.style.borderColor='#B88228';this.style.transform='translateY(-1px)'"
+          onmouseout="this.style.background='#FAF6ED';this.style.borderColor='#D4A34B';this.style.transform='none'">
+          🏪 ＋ เพิ่มร้าน / บิลใหม่
+        </button>
 
-        <button class="btn btn-green btn-full" style="margin-top:20px" onclick="generate()">🧾 สร้างสรุปยอดและ QR
-          Code</button>
+        <button class="btn btn-full" onclick="generate()"
+          style="margin-top:22px;padding:16px 20px;font-size:16px;font-weight:800;letter-spacing:0.3px;color:#FAF6ED;background:linear-gradient(135deg, #1E4D38 0%, #112F21 100%);border:1.5px solid #2D6B50;border-radius:16px;box-shadow:0 8px 24px rgba(20,53,39,0.35), inset 0 1px 1px rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:all .25s ease;"
+          onmouseover="this.style.background='linear-gradient(135deg, #276349 0%, #153928 100%)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 28px rgba(20,53,39,0.45), inset 0 1px 1px rgba(255,255,255,0.3)';"
+          onmouseout="this.style.background='linear-gradient(135deg, #1E4D38 0%, #112F21 100%)';this.style.transform='none';this.style.boxShadow='0 8px 24px rgba(20,53,39,0.35), inset 0 1px 1px rgba(255,255,255,0.2)';">
+          🧾✨ สร้างสรุปยอดและ QR Code
+        </button>
       </div>
     </div>
 
@@ -2391,7 +2396,7 @@
         <div style="margin-top:12px">
           <div class="who-label" style="margin-bottom:6px">🚫 รายการแยก (คนนี้ไม่ต้องจ่าย)</div>
           <div id="exclude-${s.id}" style="display:flex;flex-direction:column;gap:8px"></div>
-          <button class="add-session-btn" onclick="addExcludeFoodToSession('${s.id}')" style="margin-top:8px;padding:9px;font-size:13px;border-style:solid;border-color:#ffccd5;color:#c91835;background:#fff5f6" onmouseover="this.style.borderColor='#c91835';this.style.background='#ffe5e9'" onmouseout="this.style.borderColor='#ffccd5';this.style.background='#fff5f6'">＋ เพิ่มบิลค่าอาหาร (คนนี้ไม่ต้องจ่าย)</button>
+          <button class="add-session-btn" onclick="addExcludeFoodToSession('${s.id}')" style="margin-top:8px;padding:9px;font-size:13px;border-style:solid;border-color:#ffccd5;color:#c91835;background:#fff5f6" onmouseover="this.style.borderColor='#c91835';this.style.background='#ffe5e9'" onmouseout="this.style.borderColor='#ffccd5';this.style.background='#fff5f6'">＋ เพิ่มรายการแยก (คนนี้ไม่ต้องจ่าย)</button>
         </div>
       </div>`;
         el.appendChild(div);
@@ -2633,7 +2638,7 @@
           : `<button class="btn btn-red" style="padding:6px 14px;font-size:12px;margin-left:auto" onclick="askRemoveExclude('${f.id}')">ลบ</button>`;
         div.innerHTML = `
       <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#ffe5e9">
-        <span style="font-size:12px;font-weight:700;color:#c91835">🚫 รายการแยก (คนนี้ไม่จ่าย) ${i + 1}</span>
+        <span style="font-size:12px;font-weight:700;color:#c91835">🚫 รายการแยก (คนนี้ไม่ต้องจ่าย) ${i + 1}</span>
         ${delBtn}
       </div>
       <div style="padding:10px 12px;display:flex;flex-direction:column;gap:8px">
