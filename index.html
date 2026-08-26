@@ -1011,7 +1011,7 @@
     <div class="section active" id="tab-setup">
       <div class="card">
         <!-- Friends -->
-        <div class="sec-title">👥 เพื่อนที่ร่วมกินข้าว</div>
+        <div class="sec-title">👥 คนที่ไปด้วยกัน</div>
         <div class="friend-chips" id="friendChips"><span style="font-size:13px;color:var(--muted)">ยังไม่มีเพื่อน</span>
         </div>
         <div class="add-row">
@@ -1046,7 +1046,7 @@
         <hr style="border:none;border-top:1px solid var(--border);margin:18px 0">
 
         <!-- Sessions -->
-        <div class="sec-title">🍽️ บิลแต่ละร้าน</div>
+        <div class="sec-title">🤝 บิลนี้หารกัน</div>
         <div class="sessions" id="sessionList"></div>
         <button class="add-session-btn" onclick="addSession()"
           style="margin-top:10px;border-style:solid;border-color:var(--green);color:var(--green);background:var(--green-light);"
@@ -2294,7 +2294,7 @@
         const totalSessionAmt = validAmounts.reduce((sum, a) => sum + (parseFloat(a.amount) || 0), 0);
         if (s.amounts.length > 1 && validAmounts.length > 0) {
           subEl.style.display = 'flex';
-          subEl.innerHTML = `<span>รวมยอดเงินอัตโนมัติ (${validAmounts.length} รายการ):</span><span style="color:var(--green-dark);font-weight:700">฿${totalSessionAmt.toLocaleString()}</span>`;
+          subEl.innerHTML = `<span style="font-size:12.5px;">รวมยอดเงินอัตโนมัติ (${validAmounts.length} รายการ):</span><span style="flex:1;text-align:center;color:var(--green-dark);font-weight:700;font-size:14px;">฿${totalSessionAmt.toLocaleString()}</span>`;
         } else {
           subEl.style.display = 'none';
         }
@@ -2330,8 +2330,8 @@
 
       const subtotalDiv = document.createElement('div');
       subtotalDiv.id = 'subtotal-' + s.id;
-      subtotalDiv.style.cssText = `display:${showSub ? 'flex' : 'none'};justify-content:space-between;align-items:center;padding:7px 12px;background:#EBF5F0;border:1px solid #C3E2D3;border-radius:10px;font-size:13px;font-weight:600;color:var(--green-dark);margin-top:2px;`;
-      subtotalDiv.innerHTML = `<span>รวมยอดเงินอัตโนมัติ (${validAmounts.length} รายการ):</span><span style="color:var(--green-dark);font-weight:700">฿${totalSessionAmt.toLocaleString()}</span>`;
+      subtotalDiv.style.cssText = `display:${showSub ? 'flex' : 'none'};align-items:center;padding:7px 12px;background:#EBF5F0;border:1px solid #C3E2D3;border-radius:10px;font-size:13px;font-weight:600;color:var(--green-dark);margin-top:2px;`;
+      subtotalDiv.innerHTML = `<span style="font-size:12.5px;">รวมยอดเงินอัตโนมัติ (${validAmounts.length} รายการ):</span><span style="flex:1;text-align:center;color:var(--green-dark);font-weight:700;font-size:14px;">฿${totalSessionAmt.toLocaleString()}</span>`;
       el.appendChild(subtotalDiv);
     }
     function toggleWho(sid, name) {
