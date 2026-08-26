@@ -845,6 +845,56 @@
       gap: 8px;
     }
 
+    /* ---- AI SCANNER ANIMATION ---- */
+    .scanner-laser {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #20E394 20%, #FFF 50%, #20E394 80%, transparent);
+      box-shadow: 0 0 16px 5px rgba(32, 227, 148, 0.9), 0 0 5px #fff;
+      animation: scanLaserAnim 1.8s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    @keyframes scanLaserAnim {
+      0% { top: 4%; opacity: 0.85; }
+      50% { opacity: 1; }
+      100% { top: 94%; opacity: 0.85; }
+    }
+    .ai-spinner {
+      width: 22px;
+      height: 22px;
+      border: 3px solid #DDE5E0;
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: aiSpin 0.75s linear infinite;
+    }
+    @keyframes aiSpin {
+      to { transform: rotate(360deg); }
+    }
+    .ai-sparkle-spin {
+      display: inline-block;
+      animation: sparkleRotate 2.5s ease-in-out infinite;
+    }
+    @keyframes sparkleRotate {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.25) rotate(180deg); }
+    }
+    .ai-progress-bar {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 40%;
+      background: linear-gradient(90deg, var(--green-hover), var(--amber), var(--green-hover));
+      border-radius: 10px;
+      animation: aiProgressAnim 1.5s ease-in-out infinite alternate;
+    }
+    @keyframes aiProgressAnim {
+      0% { left: 0%; }
+      100% { left: 60%; }
+    }
+
     /* ---- token top-up ---- */
     .pkg-grid {
       display: grid;
@@ -1273,7 +1323,7 @@
 
   
   <!-- Hidden File Input for Camera/Gallery Receipt Scan -->
-  <input id="receiptFileInput" type="file" accept="image/*" style="display:none" onchange="handleReceiptImageSelected(event)">
+  <input id="receiptFileInput" type="file" accept="image/png, image/jpeg, image/jpg, image/webp, image/heic, image/heif, image/*" style="display:none" onchange="handleReceiptImageSelected(event)">
 
   <!-- Modal สำหรับตั้งค่า Gemini API Key -->
   <div class="modal-overlay" id="geminiKeyModal" style="display:none">
@@ -1307,6 +1357,39 @@
         <button class="btn btn-outline" style="flex:1" onclick="closeGeminiKeyModal()">ปิด</button>
         <button class="btn btn-red" style="padding:8px 12px;font-size:12px" onclick="clearGeminiApiKey()">🗑️ ลบ Key</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal Loading สำหรับ AI สแกนใบเสร็จ -->
+  <div class="modal-overlay" id="aiScanLoadingModal" style="display:none;z-index:2000;background:rgba(8,18,14,0.78);backdrop-filter:blur(8px);">
+    <div class="modal-box" style="max-width:340px;text-align:center;padding:22px 18px;border:1.5px solid var(--amber);box-shadow:0 16px 48px rgba(0,0,0,0.5);background:#fff;border-radius:20px;">
+      
+      <!-- Receipt Preview Container with Scanner Laser Beam -->
+      <div style="position:relative;width:100%;height:170px;border-radius:14px;overflow:hidden;background:#142B21;display:flex;align-items:center;justify-content:center;margin-bottom:15px;border:1.5px solid #C3E2D3;box-shadow:inset 0 0 16px rgba(0,0,0,0.3);">
+        <img id="aiScanPreviewImg" src="" alt="Receipt Preview" style="width:100%;height:100%;object-fit:cover;opacity:0.88;filter:brightness(0.92);">
+        <!-- Glowing Scanner Laser Beam -->
+        <div class="scanner-laser"></div>
+        <!-- Center Floating AI Badge -->
+        <div style="position:absolute;top:10px;right:10px;background:rgba(20,53,39,0.92);color:#FAF6ED;border:1px solid var(--amber);border-radius:12px;padding:3px 8px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,0.25);">
+          <span class="ai-sparkle-spin">✨</span> AI Scanning
+        </div>
+      </div>
+
+      <!-- Spinner & Title -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:6px;">
+        <div class="ai-spinner"></div>
+        <div id="aiScanLoadingTitle" style="font-size:15.5px;font-weight:700;color:var(--green-dark);">กำลังสแกนอ่านใบเสร็จ...</div>
+      </div>
+
+      <p id="aiScanLoadingDesc" style="font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.5;">
+        AI กำลังอ่านรายการอาหารและคำนวณยอดรวมให้อัตโนมัติ
+      </p>
+
+      <!-- Animated Progress Bar -->
+      <div style="width:100%;height:6px;background:#EBF5F0;border-radius:10px;overflow:hidden;position:relative;">
+        <div class="ai-progress-bar"></div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:8px;opacity:0.8;">กรุณารอสักครู่ (ประมาณ 2-4 วินาที)</p>
     </div>
   </div>
 
@@ -1668,6 +1751,18 @@
       }
     }
 
+    function showAiScanLoading(previewSrc) {
+      const m = document.getElementById('aiScanLoadingModal');
+      const img = document.getElementById('aiScanPreviewImg');
+      if (img && previewSrc) img.src = previewSrc;
+      if (m) m.style.display = 'flex';
+    }
+
+    function hideAiScanLoading() {
+      const m = document.getElementById('aiScanLoadingModal');
+      if (m) m.style.display = 'none';
+    }
+
     async function handleReceiptImageSelected(e) {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
@@ -1678,35 +1773,92 @@
         return;
       }
 
-      if (file.size > 10 * 1024 * 1024) {
-        showToast('ไฟล์ภาพใหญ่เกินไป (กรุณาเลือกภาพขนาดไม่เกิน 10MB)');
+      if (file.size > 20 * 1024 * 1024) {
+        showToast('ไฟล์ภาพใหญ่เกินไป (กรุณาเลือกภาพขนาดไม่เกิน 20MB)');
         return;
       }
 
-      showToast('📷 กำลังส่งภาพให้ AI สแกนอ่านใบเสร็จ...');
+      let previewUrl = '';
+      try {
+        previewUrl = URL.createObjectURL(file);
+      } catch (err) { }
+
+      // แสดงอนิเมชั่น AI สแกนทันทีพร้อมพรีวิวรูปภาพ
+      showAiScanLoading(previewUrl);
 
       try {
-        const base64Data = await readFileAsBase64(file);
-        const mimeType = file.type || 'image/jpeg';
+        const { base64Data, mimeType } = await processImageForOcr(file);
         const receiptData = await callGeminiVisionApi(base64Data, mimeType, apiKey);
 
         applyReceiptDataToSession(receiptData, targetScanSessionId);
       } catch (err) {
         console.error('Receipt OCR error:', err);
         showToast('❌ สแกนไม่สำเร็จ: ' + (err.message || 'เกิดข้อผิดพลาด'));
+      } finally {
+        hideAiScanLoading();
+        if (previewUrl) {
+          try { URL.revokeObjectURL(previewUrl); } catch (err) { }
+        }
       }
     }
 
-    function readFileAsBase64(file) {
+    function processImageForOcr(file) {
       return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const result = reader.result;
-          const base64Str = result.split(',')[1];
-          resolve(base64Str);
+        // หากเป็นรูปภาพขนาดไม่เกิน 8MB และเป็นชนิดมาตรฐาน ให้อ่านไฟล์ต้นฉบับคมชัด 100% ตรงๆ ทันที
+        if (file.size <= 8 * 1024 * 1024 && (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp')) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const dataUrl = reader.result;
+            const base64Str = dataUrl.split(',')[1];
+            resolve({ base64Data: base64Str, mimeType: file.type || 'image/jpeg' });
+          };
+          reader.onerror = err => reject(err);
+          reader.readAsDataURL(file);
+          return;
+        }
+
+        // กรณีไฟล์ขนาดใหญ่มาก หรือไฟล์ HEIC แปลงผ่าน Canvas คุณภาพสูงแบบ High-Definition (รักษาความคมชัดของตัวหนังสือ)
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          const maxDim = 2560; // ความละเอียดระดับ HD สำหรับอ่านตัวหนังสือใบเสร็จ
+          let w = img.width;
+          let h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, w, h);
+
+          const quality = 0.94; // คุณภาพ JPEG สูงเพื่อให้อ่านตัวหนังสือชัดเจน
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+          const base64Str = dataUrl.split(',')[1];
+          resolve({ base64Data: base64Str, mimeType: 'image/jpeg' });
         };
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
+        img.onerror = () => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const dataUrl = reader.result;
+            const base64Str = dataUrl.split(',')[1];
+            resolve({ base64Data: base64Str, mimeType: file.type || 'image/jpeg' });
+          };
+          reader.onerror = err => reject(err);
+          reader.readAsDataURL(file);
+        };
+        img.src = url;
       });
     }
 
