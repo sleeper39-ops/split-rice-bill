@@ -2727,14 +2727,14 @@
       if (sm.amountsTotal > 0) parts.push(`บิลหลัก ฿${sm.amountsTotal.toLocaleString()}${sm.amountsCount > 1 ? ` (${sm.amountsCount} ใบ)` : ''}`);
       if (sm.foodsTotal > 0) parts.push(`แยกจ่าย ฿${sm.foodsTotal.toLocaleString()}`);
       if (sm.vatRate > 0) parts.push(`+VAT ${sm.vatRate}%`);
-      const detailsHtml = parts.length > 0 ? `<div style="font-size:11.5px;color:var(--muted);font-weight:normal;line-height:1.3">${parts.join(' + ')}</div>` : '';
+      const detailsText = parts.length > 0 ? parts.join(' + ') : '';
 
       subEl.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-          <span style="font-size:12.5px;font-weight:600;color:var(--green-dark);">รวมยอดเงินอัตโนมัติ:</span>
-          <span style="color:var(--green-dark);font-weight:700;font-size:14.5px;">฿${sm.totalWithVat.toLocaleString()}</span>
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%">
+          <span style="font-size:12.5px;font-weight:600;color:var(--green-dark);white-space:nowrap;">รวมยอดเงินอัตโนมัติ:</span>
+          <span style="color:var(--green-dark);font-weight:700;font-size:15px;">฿${sm.totalWithVat.toLocaleString()}</span>
         </div>
-        ${detailsHtml}`;
+        ${detailsText ? `<div style="text-align:center;font-size:11.5px;color:var(--muted);font-weight:normal;line-height:1.3;margin-top:2px;">${detailsText}</div>` : ''}`;
     }
 
     function updateSession(id, key, val) {
