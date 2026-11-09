@@ -1040,6 +1040,246 @@
       top: 3px;
       right: 16%;
     }
+
+    /* ---- REALTIME CHAT STYLES ---- */
+    .chat-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: #F0F4F2;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .chat-status-badge.status-online {
+      background: #E8F5E9;
+      color: #2E7D32;
+      border-color: #A5D6A7;
+    }
+    .chat-status-badge.status-connecting {
+      background: #FFF8E1;
+      color: #F57F17;
+      border-color: #FFE082;
+    }
+    .chat-status-badge .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      display: inline-block;
+    }
+    .chat-nick-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: #F9FAF9;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .chat-nick-input {
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 5px 10px;
+      border-radius: 7px;
+      font-size: 12.5px;
+      font-family: inherit;
+      color: var(--text);
+      font-weight: 600;
+      flex: 1;
+      max-width: 200px;
+      outline: none;
+    }
+    .chat-nick-input:focus {
+      border-color: var(--green);
+    }
+    .chat-messages-box {
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      background: #FAFBF9;
+      height: 380px;
+      max-height: 55vh;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 10px;
+      scroll-behavior: smooth;
+    }
+    .chat-empty {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 50px 16px;
+      line-height: 1.6;
+    }
+    .chat-msg-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      max-width: 88%;
+    }
+    .chat-msg-row.mine {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+    .chat-msg-row.other {
+      align-self: flex-start;
+    }
+    .chat-msg-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .chat-bubble {
+      padding: 8px 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      word-break: break-word;
+      position: relative;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .chat-msg-row.mine .chat-bubble {
+      background: var(--green);
+      color: #fff;
+      border-bottom-right-radius: 3px;
+    }
+    .chat-msg-row.other .chat-bubble {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 3px;
+    }
+    .chat-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10.5px;
+      margin-bottom: 3px;
+    }
+    .chat-msg-row.mine .chat-meta {
+      justify-content: flex-end;
+      color: rgba(255,255,255,0.85);
+    }
+    .chat-msg-row.other .chat-meta {
+      color: var(--muted);
+    }
+    .chat-sender-name {
+      font-weight: 700;
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .chat-time {
+      font-size: 10px;
+      opacity: 0.8;
+    }
+    .chat-badge-tag {
+      font-size: 9.5px;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-weight: 700;
+      display: inline-block;
+    }
+    .chat-badge-tag.tag-danger {
+      background: #FFEBEE;
+      color: #C62828;
+    }
+    .chat-badge-tag.tag-amber {
+      background: #FFF8E1;
+      color: #F57F17;
+    }
+    .chat-badge-tag.tag-blue {
+      background: #E3F2FD;
+      color: #1565C0;
+    }
+    .chat-badge-tag.tag-general {
+      background: rgba(0,0,0,0.06);
+      color: var(--muted);
+    }
+    .chat-msg-row.mine .chat-badge-tag.tag-general {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+    .chat-tag-chip {
+      padding: 3px 9px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .chat-tag-chip.active {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
+    }
+    .chat-tag-chip.tag-danger.active {
+      background: var(--danger);
+      color: #fff;
+      border-color: var(--danger);
+    }
+    .chat-tag-chip.tag-amber.active {
+      background: var(--amber);
+      color: #fff;
+      border-color: var(--amber);
+    }
+    .chat-tag-chip.tag-blue.active {
+      background: #1976D2;
+      color: #fff;
+      border-color: #1976D2;
+    }
+    .chat-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+    .chat-text-input {
+      flex: 1;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--text);
+      resize: none;
+      outline: none;
+      line-height: 1.4;
+      max-height: 80px;
+    }
+    .chat-text-input:focus {
+      border-color: var(--green);
+    }
+    .chat-send-btn {
+      padding: 10px 18px;
+      font-size: 13.5px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      height: 44px;
+    }
   </style>
 </head>
 
@@ -1313,17 +1553,65 @@
       </div>
     </div>
 
-    <!-- ===== COFFEE ===== -->
-    <div class="section" id="tab-coffee">
-      <div class="card" style="text-align:center;padding:32px 20px">
-        <div style="font-size:52px;line-height:1;margin-bottom:10px">☕</div>
-        <div class="sec-title"
-          style="font-size:16px;text-transform:none;letter-spacing:0;color:var(--text);margin-bottom:8px">
-          เลี้ยงกาแฟผู้พัฒนาแอปหน่อยนะ</div>
-        <p style="font-size:13px;line-height:1.7;color:var(--muted);margin-bottom:24px">ถ้าแอปนี้ช่วยให้หารบิลง่ายขึ้น
-          แวะเลี้ยงกาแฟกันเป็นกำลังใจให้ผู้พัฒนาได้ครับ 🙏<br>กดปุ่มด้านล่างเพื่อไปที่ TrueMoney</p>
-        <a class="btn btn-green btn-full" style="text-decoration:none" href="https://tmn.app.link/daNnZroHr4b"
-          target="_blank" rel="noopener">☕ เลี้ยงกาแฟกดตรงนี้</a>
+    <!-- ===== REALTIME CHAT ROOM (แจ้งปัญหา / พูดคุย) ===== -->
+    <div class="section" id="tab-chat">
+      <div class="card" style="padding:16px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px;flex-wrap:wrap">
+          <div>
+            <div class="sec-title" style="margin:0;font-size:16px;display:flex;align-items:center;gap:6px">
+              💬 ห้องแชทออนไลน์
+            </div>
+            <p style="font-size:12px;color:var(--muted);margin:2px 0 0">
+              พูดคุย แลกเปลี่ยน หรือแจ้งปัญหาการใช้งานกับทีมพัฒนาได้แบบเรียลไทม์
+            </p>
+          </div>
+          <div id="chatOnlineStatus" class="chat-status-badge status-connecting">
+            <span class="status-dot"></span> <span id="chatStatusText">กำลังเชื่อมต่อ...</span>
+          </div>
+        </div>
+
+        <!-- Nickname setup bar -->
+        <div class="chat-nick-bar">
+          <div style="display:flex;align-items:center;gap:6px;flex:1;min-width:180px;">
+            <span style="font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;">👤 ชื่อของคุณ:</span>
+            <input type="text" id="chatNickInput" class="chat-nick-input" maxlength="20" placeholder="ตั้งชื่อที่ใช้แชท..." onchange="saveChatNickname()" onblur="saveChatNickname()">
+          </div>
+          <button type="button" class="btn-outline" style="padding:4px 10px;font-size:11.5px;border-radius:8px;" onclick="promptChangeNickname()">✏️ เปลี่ยนชื่อ</button>
+        </div>
+
+        <!-- Chat messages container -->
+        <div id="chatMessages" class="chat-messages-box">
+          <div id="chatLoadingState" style="text-align:center;padding:40px 16px;color:var(--muted);font-size:13px;">
+            <div class="ai-spinner" style="margin:0 auto 10px;"></div>
+            กำลังเชื่อมต่อและโหลดข้อความแชท...
+          </div>
+        </div>
+
+        <!-- Issue type category quick chips -->
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+          <span style="font-size:11.5px;color:var(--muted);font-weight:600;">ประเภท:</span>
+          <button type="button" class="chat-tag-chip active" data-tag="ทั่วไป" onclick="selectChatTag('ทั่วไป', this)">💬 ทั่วไป</button>
+          <button type="button" class="chat-tag-chip tag-danger" data-tag="แจ้งปัญหา" onclick="selectChatTag('แจ้งปัญหา', this)">⚠️ แจ้งปัญหา</button>
+          <button type="button" class="chat-tag-chip tag-amber" data-tag="ข้อเสนอแนะ" onclick="selectChatTag('ข้อเสนอแนะ', this)">💡 ข้อเสนอแนะ</button>
+          <button type="button" class="chat-tag-chip tag-blue" data-tag="สอบถาม" onclick="selectChatTag('สอบถาม', this)">❓ สอบถาม</button>
+        </div>
+
+        <!-- Chat input area -->
+        <div class="chat-input-row">
+          <textarea id="chatTextInput" class="chat-text-input" rows="2" placeholder="พิมพ์ข้อความ แจ้งปัญหา หรือสอบถามได้ที่นี่ (กด Enter เพื่อส่ง)..." onkeydown="handleChatInputKey(event)"></textarea>
+          <button type="button" id="chatSendBtn" class="btn btn-green chat-send-btn" onclick="sendChatMessage()">
+            <span>ส่ง</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-left:2px;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Coffee tip card (kept as subtle support option) -->
+      <div class="card" style="text-align:center;padding:16px 20px;background:var(--amber-light);border:1px dashed var(--amber);">
+        <div style="font-size:13px;line-height:1.6;color:var(--text);">
+          ☕ <b>ชื่นชอบแอปหารค่าข้าว?</b> แวะเลี้ยงกาแฟเป็นกำลังใจให้ผู้พัฒนาได้นะครับ 🙏
+        </div>
+        <a class="btn btn-outline" style="text-decoration:none;display:inline-block;margin-top:8px;padding:6px 18px;font-size:12.5px;border-color:var(--amber);color:#8F5C08;background:#fff;" href="https://tmn.app.link/daNnZroHr4b" target="_blank" rel="noopener">☕ เลี้ยงกาแฟผ่าน TrueMoney</a>
       </div>
     </div>
 
@@ -1342,8 +1630,9 @@
         Token</span></button>
     <button class="nav-item" data-tab="details" onclick="switchTab('details')"><span
         class="nav-icon">ℹ️</span><span>รายละเอียด</span></button>
-    <button class="nav-item" data-tab="coffee" onclick="switchTab('coffee')"><span
-        class="nav-icon">☕</span><span>เลี้ยงกาแฟ</span></button>
+    <button class="nav-item" data-tab="chat" onclick="switchTab('chat')"><span
+        class="nav-icon">💬</span><span>ห้องแชท</span><span id="chat-unread-badge" class="badge nav-badge"
+        style="display:none;background:var(--danger);color:#fff;width:8px;height:8px;padding:0;border-radius:50%;min-width:unset;top:6px;right:22%;"></span></button>
   </div>
 
   
@@ -1479,10 +1768,12 @@
         if (user) {
           fbUid = user.uid;
           loadFromFirebaseThenSync();
+          initRealtimeChat();
         } else {
           fbAuth.signInAnonymously().catch(e => {
             console.error('anonymous sign-in failed', e);
             showToast('เชื่อมต่อระบบซิงก์ไม่สำเร็จ ใช้งานแบบออฟไลน์ได้ตามปกตินะ ⚠️');
+            updateChatStatus(false);
           });
         }
       });
@@ -1509,6 +1800,11 @@
             paidStatus = remote.paid || {};
             groups = remote.groups || [];
             tripHistory = remote.tripHistory || [];
+            if (remote.lastSummary) {
+              lastSummaryData = remote.lastSummary;
+              try { localStorage.setItem('sb_last_summary', JSON.stringify(lastSummaryData)); } catch (e) { }
+              renderSummaryUI(lastSummaryData);
+            }
             sessions.forEach(sess => {
               if (!sess.amounts) {
                 sess.amounts = [{ name: '', amount: sess.amount || '' }];
@@ -1603,6 +1899,7 @@
         friends, sessions, shortcuts, sessionCounter, foodCounter,
         paid: paidStatus,
         groups, tripHistory,
+        lastSummary: lastSummaryData,
         pp: pp ? pp.value : '',
         updatedAt: firebase.database.ServerValue.TIMESTAMP
       }).catch(e => console.error('push state to firebase error', e));
@@ -1636,6 +1933,9 @@
         localStorage.setItem('sb_sessionCounter', sessionCounter);
         localStorage.setItem('sb_foodCounter', foodCounter);
         localStorage.setItem('sb_paid', JSON.stringify(paidStatus));
+        if (lastSummaryData) {
+          localStorage.setItem('sb_last_summary', JSON.stringify(lastSummaryData));
+        }
         localStorage.setItem('sb_groups', JSON.stringify(groups));
         localStorage.setItem('sb_tripHistory', JSON.stringify(tripHistory));
         const pp = document.getElementById('ppNum');
@@ -1675,6 +1975,10 @@
         foodCounter = parseInt(localStorage.getItem('sb_foodCounter') || '0');
         const pd = localStorage.getItem('sb_paid');
         if (pd) paidStatus = JSON.parse(pd);
+        const ls = localStorage.getItem('sb_last_summary');
+        if (ls) {
+          try { lastSummaryData = JSON.parse(ls); } catch (e) { }
+        }
         const gr = localStorage.getItem('sb_groups');
         if (gr) groups = JSON.parse(gr);
         const th = localStorage.getItem('sb_tripHistory');
@@ -1688,11 +1992,12 @@
     let foodCounter = 0;
     let foodBills = [];
     let shortcuts = ['ตัวเอง'];
-    let paidStatus = {}; // { [friendName]: true } สถานะจ่ายแล้วของบิลปัจจุบัน (รีเซ็ตทุกครั้งที่กดสร้างสรุปยอดใหม่)
+    let paidStatus = {}; // { [friendName]: true } สถานะจ่ายแล้วของแต่ละคน (จำค่าต่อเนื่อง ไม่ถูกลบอัตโนมัติ)
     let groups = []; // [{id,name,members:[friendName,...]}] "แก๊ง" เพื่อนที่บันทึกไว้ใช้ซ้ำ
     let tripHistory = []; // [{id,date,friends:[name],sessionNames:[name],totalBill,grandTotal}] ประวัติทริปที่เคยสร้างสรุปยอด (เก็บล่าสุด 30 ครั้ง)
     let _resultCache = null;
     let _resultDate = null;
+    let lastSummaryData = null; // ข้อมูลสรุปยอดล่าสุดเพื่อจำค่าแสดงผลหน้าสรุปยอดเสมอ
 
     function formatThaiDateTime(dateInput) {
       const d = dateInput instanceof Date ? dateInput : (dateInput ? new Date(dateInput) : new Date());
@@ -3086,7 +3391,15 @@
       _resultCache = totals;
 
       if (addToHistory) {
-        paidStatus = {}; // เริ่มรอบทวงเงินใหม่ทุกครั้งที่สร้างสรุปยอดใหม่
+        // จำค่าสถานะจ่ายเงินเดิมของเพื่อนที่ยังมีอยู่ในบิล
+        const keptPaidStatus = {};
+        friends.forEach(f => {
+          if (paidStatus && paidStatus[f.name]) {
+            keptPaidStatus[f.name] = true;
+          }
+        });
+        paidStatus = keptPaidStatus;
+
         // เก็บลงประวัติทริป (เก็บล่าสุด 30 ครั้ง) พร้อมข้อมูลครบถ้วนทั้งรายชื่อและการเงิน
         tripHistory.unshift({
           id: 't' + Date.now(),
@@ -3103,130 +3416,19 @@
         if (tripHistory.length > 30) tripHistory = tripHistory.slice(0, 30);
       }
 
+      lastSummaryData = {
+        date: _resultDate.toISOString(),
+        friends: JSON.parse(JSON.stringify(friends)),
+        sessions: JSON.parse(JSON.stringify(sessions)),
+        totals: JSON.parse(JSON.stringify(totals)),
+        totalBill,
+        grandTotal,
+        ppNum: ppNum || ''
+      };
+
       saveState();
 
-      const out = document.getElementById('resultOut');
-      if (out) {
-        out.innerHTML = '';
-
-        // summary banner
-        const vatRates = [...new Set(sessions.map(s => parseFloat(s.vat) || 0).filter(v => v > 0))];
-        const vatText = vatRates.length > 0 ? ` (รวม VAT ${vatRates.map(v => v + '%').join(', ')})` : '';
-        const dtText = formatThaiDateTime(_resultDate);
-
-        const banner = document.createElement('div');
-        banner.className = 'summary-banner';
-        banner.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;flex-wrap:wrap">
-        <div class="sb-label" style="margin:0">ยอดรวมทั้งหมด (${sessions.length} ร้าน)${vatText}</div>
-        <div style="font-size:12px;font-weight:700;background:rgba(255,255,255,0.18);padding:4px 10px;border-radius:12px;color:#FAF6ED;border:1px solid rgba(212,163,75,0.4);display:inline-flex;align-items:center;gap:5px">📅 ${dtText}</div>
-      </div>
-      <div class="sb-val">฿${totalBill.toLocaleString()}</div>
-      <div class="sb-sub">👥 ${friends.length} คน • เก็บรวม ฿${grandTotal.toLocaleString()}</div>`;
-        out.appendChild(banner);
-
-        // copy all btn
-        const copyAllBtn = document.createElement('button');
-        copyAllBtn.className = 'btn btn-full';
-        copyAllBtn.style.marginBottom = '16px';
-        copyAllBtn.style.background = '#06C755';
-        copyAllBtn.style.color = '#fff';
-        copyAllBtn.innerHTML = '💬 คัดลอกสรุปส่ง LINE ทีเดียว <span style="opacity:.8;font-size:12px;font-weight:500">(-1 Token)</span>';
-        copyAllBtn.onclick = () => copyAll(totals, sessions, ppNum);
-        out.appendChild(copyAllBtn);
-
-        // reminder + image-summary actions
-        const extraActions = document.createElement('div');
-        extraActions.style.cssText = 'display:flex;gap:8px;margin-bottom:16px;';
-        const remindBtn = document.createElement('button');
-        remindBtn.className = 'btn-outline';
-        remindBtn.style.flex = '1';
-        remindBtn.innerHTML = '🔔 ทวงเงิน <span style="opacity:.7;font-size:11px">(-1 Token/คน)</span>';
-        remindBtn.onclick = () => openReminderModal(totals, ppNum);
-        extraActions.appendChild(remindBtn);
-        const imgBtn = document.createElement('button');
-        imgBtn.className = 'btn-outline';
-        imgBtn.style.flex = '1';
-        imgBtn.innerHTML = '🖼️ สรุปเป็นรูป <span style="opacity:.7;font-size:11px">(-1 Token)</span>';
-        imgBtn.onclick = () => generateSummaryImage(totals, sessions, ppNum);
-        extraActions.appendChild(imgBtn);
-        out.appendChild(extraActions);
-
-        // per-person cards
-        friends.forEach((f, fi) => {
-          const info = totals[f.name];
-          if (!info || info.total === 0) return;
-
-          const pVatRates = [...new Set(info.breakdown.map(b => b.vat || 0).filter(v => v > 0))];
-          const pVatText = pVatRates.length > 0 ? `<span style="font-size:11px;color:var(--muted);font-weight:normal;margin-left:4px;">(รวม VAT ${pVatRates.map(v => v + '%').join(', ')})</span>` : '';
-          const pVatTextSimple = pVatRates.length > 0 ? ` (รวม VAT ${pVatRates.map(v => v + '%').join(', ')})` : '';
-
-          // breakdown panel (similar to canvas breakdown but in HTML)
-          let bdHtml = '';
-          if (info.breakdown && info.breakdown.length > 0) {
-            bdHtml = `<div class="breakdown">`;
-            info.breakdown.forEach(b => {
-              const vatRate = b.vat || 0;
-              const vatLabel = vatRate > 0 ? `<span style="font-size:11px;color:var(--muted);margin-left:4px;">(VAT ${vatRate}%)</span>` : '';
-              if (b.food) {
-                const paxText = b.pax > 1 ? ` (÷ ${b.pax} คน)` : '';
-                bdHtml += `<div class="bk-row">
-                  <span>🍽️ ${b.label}${vatLabel}${paxText}</span>
-                  <span>฿${b.amount.toLocaleString()}</span>
-                </div>`;
-              } else {
-                bdHtml += `<div class="bk-row">
-                  <span>📍 ${b.label} (฿${b.bill.toLocaleString()} ÷ ${b.pax} คน)${vatLabel}</span>
-                  <span>฿${b.amount.toLocaleString()}</span>
-                </div>`;
-              }
-            });
-            bdHtml += `</div>`;
-          }
-
-          const card = document.createElement('div');
-          card.className = 'person-card';
-          card.dataset.name = f.name;
-          const qrId = 'qr-' + fi;
-          const isPaid = !!paidStatus[f.name];
-
-          card.innerHTML = `
-        <div class="person-head">
-          <div class="avatar" style="background:${f.color}">${initial(f.name)}</div>
-          <div class="person-name">${f.name}</div>
-          <div class="person-total">฿${info.total.toLocaleString()}${pVatText}</div>
-        </div>
-        <div class="paid-strip ${isPaid ? 'is-paid' : ''}" onclick="togglePaid('${f.name}')">
-          <span>${isPaid ? '✅ จ่ายแล้ว' : '⏳ ยังไม่จ่าย'}</span>
-          <span class="paid-strip-hint">${isPaid ? 'แตะเพื่อยกเลิก' : 'แตะเมื่อจ่ายแล้ว'}</span>
-        </div>
-        ${bdHtml}
-        <div class="qr-section">
-          <div class="qr-box" id="${qrId}"></div>
-          ${ppNum ? `<div style="display:inline-block;background:#162D24;color:#FAF6ED;border:1.5px solid #D4A34B;font-size:16px;font-weight:700;padding:6px 16px;border-radius:20px;">📲 PromptPay: ${ppNum}</div>` : `<div style="font-size:12px;color:var(--amber)">⚠️ กรอกเบอร์ PromptPay เพื่อสร้าง QR</div>`}
-          <div class="qr-name-box">
-            <div class="qr-name">${f.name}</div>
-            <div class="qr-amount">โอน ฿${info.total.toLocaleString()}${pVatTextSimple}</div>
-          </div>
-        </div>
-        <div class="action-row">
-          <button class="btn-outline" onclick="copyPerson('${f.name}',${info.total},'${ppNum}')">📋 คัดลอก <span style="opacity:.7;font-size:11px">(-1 Token)</span></button>
-          <button class="btn-outline" onclick="lineShare('${f.name}',${info.total},'${ppNum}')">💚 ส่ง LINE <span style="opacity:.7;font-size:11px">(-1 Token)</span></button>
-        </div>`;
-          out.appendChild(card);
-
-          // QR
-          const qrText = ppNum ? buildQR(ppNum, info.total) : `โอน ฿${info.total} ให้ ${f.name}`;
-          try { new QRCode(document.getElementById(qrId), { text: qrText, width: 160, height: 160, colorDark: '#111', colorLight: '#fff', correctLevel: QRCode.CorrectLevel.M }); }
-          catch (e) { document.getElementById(qrId).innerHTML = '<div style="padding:16px;font-size:11px;color:#999;text-align:center">QR error</div>'; }
-        });
-      }
-
-      const badge = document.getElementById('count-badge');
-      if (badge) {
-        badge.textContent = friends.length;
-        badge.style.display = 'inline';
-      }
+      renderSummaryUI(lastSummaryData);
 
       if (switchTabToResult) {
         switchTab('result');
@@ -3235,6 +3437,146 @@
         showToast(addToHistory ? 'สร้างบิลสำเร็จ! ✅' : 'แสดงสรุปยอดแล้ว! 📊');
       }
       return true;
+    }
+
+    function renderSummaryUI(summaryData) {
+      if (!summaryData) return;
+      const { totals, sessions: sList, friends: fList, totalBill, grandTotal, ppNum, date } = summaryData;
+      if (!fList || !fList.length || !totals) return;
+
+      _resultCache = totals;
+      _resultDate = date ? new Date(date) : new Date();
+
+      const out = document.getElementById('resultOut');
+      if (!out) return;
+      out.innerHTML = '';
+
+      // summary banner
+      const vatRates = [...new Set((sList || []).map(s => parseFloat(s.vat) || 0).filter(v => v > 0))];
+      const vatText = vatRates.length > 0 ? ` (รวม VAT ${vatRates.map(v => v + '%').join(', ')})` : '';
+      const dtText = formatThaiDateTime(_resultDate);
+
+      const banner = document.createElement('div');
+      banner.className = 'summary-banner';
+      banner.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;flex-wrap:wrap">
+      <div class="sb-label" style="margin:0">ยอดรวมทั้งหมด (${(sList || []).length} ร้าน)${vatText}</div>
+      <div style="font-size:12px;font-weight:700;background:rgba(255,255,255,0.18);padding:4px 10px;border-radius:12px;color:#FAF6ED;border:1px solid rgba(212,163,75,0.4);display:inline-flex;align-items:center;gap:5px">📅 ${dtText}</div>
+    </div>
+    <div class="sb-val">฿${totalBill.toLocaleString()}</div>
+    <div class="sb-sub">👥 ${fList.length} คน • เก็บรวม ฿${grandTotal.toLocaleString()}</div>`;
+      out.appendChild(banner);
+
+      // copy all btn
+      const copyAllBtn = document.createElement('button');
+      copyAllBtn.className = 'btn btn-full';
+      copyAllBtn.style.marginBottom = '16px';
+      copyAllBtn.style.background = '#06C755';
+      copyAllBtn.style.color = '#fff';
+      copyAllBtn.innerHTML = '💬 คัดลอกสรุปส่ง LINE ทีเดียว <span style="opacity:.8;font-size:12px;font-weight:500">(-1 Token)</span>';
+      copyAllBtn.onclick = () => copyAll(totals, sList, ppNum);
+      out.appendChild(copyAllBtn);
+
+      // reminder + image-summary actions + reset paid button
+      const extraActions = document.createElement('div');
+      extraActions.style.cssText = 'display:flex;gap:8px;margin-bottom:16px;';
+      const remindBtn = document.createElement('button');
+      remindBtn.className = 'btn-outline';
+      remindBtn.style.flex = '1';
+      remindBtn.innerHTML = '🔔 ทวงเงิน <span style="opacity:.7;font-size:11px">(-1 Token/คน)</span>';
+      remindBtn.onclick = () => openReminderModal(totals, ppNum);
+      extraActions.appendChild(remindBtn);
+      const imgBtn = document.createElement('button');
+      imgBtn.className = 'btn-outline';
+      imgBtn.style.flex = '1';
+      imgBtn.innerHTML = '🖼️ สรุปเป็นรูป <span style="opacity:.7;font-size:11px">(-1 Token)</span>';
+      imgBtn.onclick = () => generateSummaryImage(totals, sList, ppNum);
+      extraActions.appendChild(imgBtn);
+
+      const resetPaidBtn = document.createElement('button');
+      resetPaidBtn.className = 'btn-outline';
+      resetPaidBtn.style.flex = '0.9';
+      resetPaidBtn.innerHTML = '🔄 รีเซ็ตจ่าย';
+      resetPaidBtn.title = 'รีเซ็ตสถานะจ่ายเงินทุกคนเป็นยังไม่จ่าย';
+      resetPaidBtn.onclick = () => resetAllPaid();
+      extraActions.appendChild(resetPaidBtn);
+
+      out.appendChild(extraActions);
+
+      // per-person cards
+      fList.forEach((f, fi) => {
+        const info = totals[f.name];
+        if (!info || info.total === 0) return;
+
+        const pVatRates = [...new Set((info.breakdown || []).map(b => b.vat || 0).filter(v => v > 0))];
+        const pVatText = pVatRates.length > 0 ? `<span style="font-size:11px;color:var(--muted);font-weight:normal;margin-left:4px;">(รวม VAT ${pVatRates.map(v => v + '%').join(', ')})</span>` : '';
+        const pVatTextSimple = pVatRates.length > 0 ? ` (รวม VAT ${pVatRates.map(v => v + '%').join(', ')})` : '';
+
+        // breakdown panel
+        let bdHtml = '';
+        if (info.breakdown && info.breakdown.length > 0) {
+          bdHtml = `<div class="breakdown">`;
+          info.breakdown.forEach(b => {
+            const vatRate = b.vat || 0;
+            const vatLabel = vatRate > 0 ? `<span style="font-size:11px;color:var(--muted);margin-left:4px;">(VAT ${vatRate}%)</span>` : '';
+            if (b.food) {
+              const paxText = b.pax > 1 ? ` (÷ ${b.pax} คน)` : '';
+              bdHtml += `<div class="bk-row">
+                <span>🍽️ ${b.label}${vatLabel}${paxText}</span>
+                <span>฿${b.amount.toLocaleString()}</span>
+              </div>`;
+            } else {
+              bdHtml += `<div class="bk-row">
+                <span>📍 ${b.label} (฿${b.bill.toLocaleString()} ÷ ${b.pax} คน)${vatLabel}</span>
+                <span>฿${b.amount.toLocaleString()}</span>
+              </div>`;
+            }
+          });
+          bdHtml += `</div>`;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'person-card';
+        card.dataset.name = f.name;
+        const qrId = 'qr-' + fi;
+        const isPaid = !!paidStatus[f.name];
+
+        card.innerHTML = `
+      <div class="person-head">
+        <div class="avatar" style="background:${f.color}">${initial(f.name)}</div>
+        <div class="person-name">${f.name}</div>
+        <div class="person-total">฿${info.total.toLocaleString()}${pVatText}</div>
+      </div>
+      <div class="paid-strip ${isPaid ? 'is-paid' : ''}" onclick="togglePaid('${f.name}')">
+        <span>${isPaid ? '✅ จ่ายแล้ว' : '⏳ ยังไม่จ่าย'}</span>
+        <span class="paid-strip-hint">${isPaid ? 'แตะเพื่อยกเลิก' : 'แตะเมื่อจ่ายแล้ว'}</span>
+      </div>
+      ${bdHtml}
+      <div class="qr-section">
+        <div class="qr-box" id="${qrId}"></div>
+        ${ppNum ? `<div style="display:inline-block;background:#162D24;color:#FAF6ED;border:1.5px solid #D4A34B;font-size:16px;font-weight:700;padding:6px 16px;border-radius:20px;">📲 PromptPay: ${ppNum}</div>` : `<div style="font-size:12px;color:var(--amber)">⚠️ กรอกเบอร์ PromptPay เพื่อสร้าง QR</div>`}
+        <div class="qr-name-box">
+          <div class="qr-name">${f.name}</div>
+          <div class="qr-amount">โอน ฿${info.total.toLocaleString()}${pVatTextSimple}</div>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="btn-outline" onclick="copyPerson('${f.name}',${info.total},'${ppNum}')">📋 คัดลอก <span style="opacity:.7;font-size:11px">(-1 Token)</span></button>
+        <button class="btn-outline" onclick="lineShare('${f.name}',${info.total},'${ppNum}')">💚 ส่ง LINE <span style="opacity:.7;font-size:11px">(-1 Token)</span></button>
+      </div>`;
+        out.appendChild(card);
+
+        // QR
+        const qrText = ppNum ? buildQR(ppNum, info.total) : `โอน ฿${info.total} ให้ ${f.name}`;
+        try { new QRCode(document.getElementById(qrId), { text: qrText, width: 160, height: 160, colorDark: '#111', colorLight: '#fff', correctLevel: QRCode.CorrectLevel.M }); }
+        catch (e) { document.getElementById(qrId).innerHTML = '<div style="padding:16px;font-size:11px;color:#999;text-align:center">QR error</div>'; }
+      });
+
+      const badge = document.getElementById('count-badge');
+      if (badge) {
+        badge.textContent = fList.length;
+        badge.style.display = 'inline';
+      }
     }
 
     /* ---- TRIP HISTORY ---- */
@@ -3606,8 +3948,22 @@
     /* ---- PAID STATUS ---- */
     function togglePaid(name) {
       paidStatus[name] = !paidStatus[name];
-      saveState();
       const paid = !!paidStatus[name];
+
+      // บันทึกลงใน lastSummaryData ด้วย
+      if (lastSummaryData) {
+        if (!lastSummaryData.paidStatus) lastSummaryData.paidStatus = {};
+        lastSummaryData.paidStatus[name] = paid;
+      }
+
+      // บันทึกลงในประวัติทริปล่าสุดด้วย (ถ้ามี)
+      if (tripHistory && tripHistory.length > 0) {
+        if (!tripHistory[0].paidStatus) tripHistory[0].paidStatus = {};
+        tripHistory[0].paidStatus[name] = paid;
+      }
+
+      saveState();
+
       document.querySelectorAll('.person-card').forEach(card => {
         if (card.dataset.name === name) {
           const strip = card.querySelector('.paid-strip');
@@ -3617,6 +3973,27 @@
         }
       });
       showToast(paid ? `บันทึกว่า ${name} จ่ายแล้ว ✅` : `เปลี่ยนเป็นยังไม่จ่ายแล้วนะ ⏳`);
+    }
+
+    function resetAllPaid() {
+      if (!Object.values(paidStatus || {}).some(Boolean)) {
+        showToast('ยังไม่มีใครถูกบันทึกว่าจ่ายแล้วนะ 😊');
+        return;
+      }
+      if (confirm('ต้องการรีเซ็ตสถานะการจ่ายเงินของทุกคนเป็น "ยังไม่จ่าย" ใช่ไหม?')) {
+        paidStatus = {};
+        if (lastSummaryData) {
+          lastSummaryData.paidStatus = {};
+        }
+        if (tripHistory && tripHistory.length > 0) {
+          tripHistory[0].paidStatus = {};
+        }
+        saveState();
+        if (lastSummaryData) {
+          renderSummaryUI(lastSummaryData);
+        }
+        showToast('รีเซ็ตสถานะการจ่ายเงินเรียบร้อยแล้ว 🔄');
+      }
     }
 
     /* ---- ทวงเงินอัตโนมัติผ่าน LINE ---- */
@@ -4101,18 +4478,266 @@
       }, 'image/png');
     }
 
+    /* ---- REALTIME CHAT ROOM ---- */
+    let chatNickname = '';
+    let currentChatTag = 'ทั่วไป';
+    let _chatListenerAttached = false;
+    let _pageLoadedAt = Date.now();
+
+    function initRealtimeChat() {
+      // 1. nickname
+      const savedNick = localStorage.getItem('sb_chat_nick');
+      if (savedNick) {
+        chatNickname = savedNick;
+      } else {
+        const randId = fbUid ? fbUid.slice(-4) : Math.floor(1000 + Math.random() * 9000);
+        chatNickname = 'ผู้ใช้_' + randId;
+        localStorage.setItem('sb_chat_nick', chatNickname);
+      }
+      const nickInput = document.getElementById('chatNickInput');
+      if (nickInput) nickInput.value = chatNickname;
+
+      // 2. update status badge
+      updateChatStatus(true);
+
+      // 3. attach realtime listener
+      if (_chatListenerAttached || !fbDb) return;
+      _chatListenerAttached = true;
+
+      const chatRef = fbDb.ref('public_chat').limitToLast(60);
+      const loadingEl = document.getElementById('chatLoadingState');
+
+      chatRef.on('child_added', snap => {
+        if (loadingEl && loadingEl.parentNode) {
+          loadingEl.remove();
+        }
+        const val = snap.val();
+        if (!val) return;
+        renderChatMessageBubble(snap.key, val);
+      });
+    }
+
+    function updateChatStatus(online) {
+      const el = document.getElementById('chatOnlineStatus');
+      const text = document.getElementById('chatStatusText');
+      if (!el || !text) return;
+      if (online) {
+        el.className = 'chat-status-badge status-online';
+        text.textContent = 'ออนไลน์เรียลไทม์';
+      } else {
+        el.className = 'chat-status-badge status-connecting';
+        text.textContent = 'กำลังเชื่อมต่อ...';
+      }
+    }
+
+    function saveChatNickname() {
+      const input = document.getElementById('chatNickInput');
+      if (!input) return;
+      const val = input.value.trim();
+      if (!val) {
+        input.value = chatNickname;
+        return;
+      }
+      chatNickname = val;
+      localStorage.setItem('sb_chat_nick', chatNickname);
+      showToast(`บันทึกชื่อแชทเป็น "${chatNickname}" แล้ว ✅`);
+    }
+
+    function promptChangeNickname() {
+      const newName = prompt('ระบุชื่อที่ต้องการใช้ในห้องแชท:', chatNickname);
+      if (newName && newName.trim()) {
+        chatNickname = newName.trim();
+        localStorage.setItem('sb_chat_nick', chatNickname);
+        const input = document.getElementById('chatNickInput');
+        if (input) input.value = chatNickname;
+        showToast(`บันทึกชื่อแชทเป็น "${chatNickname}" แล้ว ✅`);
+      }
+    }
+
+    function selectChatTag(tag, btn) {
+      currentChatTag = tag;
+      document.querySelectorAll('.chat-tag-chip').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatChatTime(ts) {
+      if (!ts) return '';
+      const d = new Date(ts);
+      if (isNaN(d.getTime())) return '';
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      const today = new Date();
+      if (d.toDateString() === today.toDateString()) {
+        return `${hours}:${minutes} น.`;
+      }
+      const day = d.getDate();
+      const month = d.getMonth() + 1;
+      return `${day}/${month} ${hours}:${minutes}`;
+    }
+
+    function getChatAvatarColor(nameOrUid) {
+      if (!nameOrUid) return COLORS[0];
+      let hash = 0;
+      for (let i = 0; i < nameOrUid.length; i++) {
+        hash = (hash << 5) - hash + nameOrUid.charCodeAt(i);
+        hash |= 0;
+      }
+      return COLORS[Math.abs(hash) % COLORS.length];
+    }
+
+    const _renderedChatMsgIds = new Set();
+    function renderChatMessageBubble(key, val) {
+      if (_renderedChatMsgIds.has(key)) return;
+      _renderedChatMsgIds.add(key);
+
+      const box = document.getElementById('chatMessages');
+      if (!box) return;
+
+      const isMine = val.uid && fbUid ? val.uid === fbUid : (val.sender === chatNickname);
+      const row = document.createElement('div');
+      row.className = `chat-msg-row ${isMine ? 'mine' : 'other'}`;
+      row.dataset.key = key;
+
+      const color = getChatAvatarColor(val.uid || val.sender || 'A');
+      const senderInitial = escapeHtml(initial(val.sender || 'U'));
+      const senderName = escapeHtml(val.sender || 'ผู้ใช้งาน');
+      const textContent = escapeHtml(val.text || '').replace(/\n/g, '<br>');
+      const timeStr = formatChatTime(val.createdAt || val.timestamp);
+
+      let tagClass = 'tag-general';
+      let tagLabel = val.tag || 'ทั่วไป';
+      if (tagLabel === 'แจ้งปัญหา') tagClass = 'tag-danger';
+      else if (tagLabel === 'ข้อเสนอแนะ') tagClass = 'tag-amber';
+      else if (tagLabel === 'สอบถาม') tagClass = 'tag-blue';
+
+      row.innerHTML = `
+        <div class="chat-msg-avatar" style="background:${color};" title="${senderName}">${senderInitial}</div>
+        <div class="chat-bubble">
+          <div class="chat-meta">
+            <span class="chat-sender-name">${senderName}</span>
+            <span class="chat-badge-tag ${tagClass}">${escapeHtml(tagLabel)}</span>
+            <span class="chat-time">${timeStr}</span>
+          </div>
+          <div>${textContent}</div>
+        </div>
+      `;
+
+      box.appendChild(row);
+
+      // Auto scroll
+      scrollChatToBottom();
+
+      // Show unread badge if message arrived after page load and user is on another tab
+      const isChatTabActive = document.getElementById('tab-chat') && document.getElementById('tab-chat').classList.contains('active');
+      const isNew = val.createdAt ? val.createdAt > _pageLoadedAt - 3000 : true;
+      if (!isChatTabActive && !isMine && isNew) {
+        const badge = document.getElementById('chat-unread-badge');
+        if (badge) badge.style.display = 'inline-block';
+      }
+    }
+
+    function scrollChatToBottom(force = false) {
+      const box = document.getElementById('chatMessages');
+      if (!box) return;
+      const threshold = 160;
+      const isNearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < threshold;
+      if (force || isNearBottom) {
+        box.scrollTop = box.scrollHeight;
+      }
+    }
+
+    function handleChatInputKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChatMessage();
+      }
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chatTextInput');
+      if (!input) return;
+      const text = input.value.trim();
+      if (!text) return;
+
+      if (!fbDb) {
+        showToast('ระบบแชทกำลังเชื่อมต่อ กรุณารอสักครู่ ⏳');
+        return;
+      }
+
+      const sendBtn = document.getElementById('chatSendBtn');
+      if (sendBtn) sendBtn.disabled = true;
+
+      // ensure nick
+      if (!chatNickname) {
+        const nickInp = document.getElementById('chatNickInput');
+        chatNickname = (nickInp && nickInp.value.trim()) || 'ผู้ใช้งาน';
+      }
+
+      fbDb.ref('public_chat').push({
+        sender: chatNickname,
+        uid: fbUid || 'anon',
+        text: text.slice(0, 500),
+        tag: currentChatTag || 'ทั่วไป',
+        createdAt: firebase.database.ServerValue.TIMESTAMP
+      }).then(() => {
+        input.value = '';
+        if (sendBtn) sendBtn.disabled = false;
+        scrollChatToBottom(true);
+      }).catch(err => {
+        console.error('send message error', err);
+        if (sendBtn) sendBtn.disabled = false;
+        showToast('ส่งข้อความไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ต 🙏');
+      });
+    }
+
     function switchTab(t) {
-      const map = { setup: 'tab-setup', shortcuts: 'tab-shortcuts', groups: 'tab-groups', result: 'tab-result', topup: 'tab-topup', details: 'tab-details', coffee: 'tab-coffee', history: 'tab-history' };
-      const secId = map[t] ? t : 'setup';
+      const map = {
+        setup: 'tab-setup',
+        shortcuts: 'tab-shortcuts',
+        groups: 'tab-groups',
+        result: 'tab-result',
+        topup: 'tab-topup',
+        details: 'tab-details',
+        chat: 'tab-chat',
+        coffee: 'tab-chat',
+        history: 'tab-history'
+      };
+      const secId = map[t] ? (t === 'coffee' ? 'chat' : t) : 'setup';
       document.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-      document.getElementById(map[secId]).classList.add('active');
+      const targetSec = document.getElementById(map[secId]);
+      if (targetSec) targetSec.classList.add('active');
       const navItem = document.querySelector('.nav-item[data-tab="' + secId + '"]');
       if (navItem) navItem.classList.add('active');
       if (secId === 'shortcuts') { renderShortcuts(); }
       if (secId === 'groups') { renderGroupChips(); }
       if (secId === 'topup') { renderPackages(); renderTokenLog(); updateDailyClaimBtn(); renderTokenBadge(); }
       if (secId === 'history') { renderTripHistory(); }
+      if (secId === 'result') {
+        const out = document.getElementById('resultOut');
+        if (out && !out.querySelector('.summary-banner') && lastSummaryData) {
+          renderSummaryUI(lastSummaryData);
+        }
+      }
+      if (secId === 'chat') {
+        const badge = document.getElementById('chat-unread-badge');
+        if (badge) badge.style.display = 'none';
+        scrollChatToBottom();
+        if (window.innerWidth > 600) {
+          const inp = document.getElementById('chatTextInput');
+          if (inp) inp.focus();
+        }
+      }
       try {
         const url = new URL(location.href);
         url.searchParams.set('tab', secId);
@@ -4151,11 +4776,22 @@
     // save promptpay on input
     document.getElementById('ppNum').addEventListener('input', saveState);
 
-    // deep-link support for LINE Rich Menu buttons: ?tab=setup|result|topup|details
+    // Restore latest summary if available
+    if (lastSummaryData) {
+      renderSummaryUI(lastSummaryData);
+    } else if (tripHistory && tripHistory.length > 0 && tripHistory[0].sessions) {
+      const t0 = tripHistory[0];
+      if (t0.paidStatus && typeof t0.paidStatus === 'object') {
+        paidStatus = JSON.parse(JSON.stringify(t0.paidStatus));
+      }
+      generate(false, false, false, t0.date);
+    }
+
+    // deep-link support for LINE Rich Menu buttons: ?tab=setup|result|topup|details|chat
     (function () {
       const params = new URLSearchParams(location.search);
       const initTab = params.get('tab');
-      switchTab(['setup', 'shortcuts', 'groups', 'result', 'topup', 'details', 'coffee', 'history'].includes(initTab) ? initTab : 'setup');
+      switchTab(['setup', 'shortcuts', 'groups', 'result', 'topup', 'details', 'chat', 'coffee', 'history'].includes(initTab) ? initTab : 'setup');
     })();
 
     /* ---- basic protection: block right-click / view-source shortcuts ----
